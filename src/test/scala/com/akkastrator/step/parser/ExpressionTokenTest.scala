@@ -1,7 +1,7 @@
 package com.akkastrator.step.token
 
 import com.akkastrator.step.parser.ExpressionToken
-import com.akkastrator.step.parser.TokenException.UndefinedPropertyException
+import com.akkastrator.step.parser.TokenException.{NonLiteralValueException, UndefinedPropertyException}
 import org.scalatest.flatspec.AnyFlatSpec
 import org.scalatest.matchers.should.Matchers
 
@@ -61,8 +61,32 @@ class ExpressionTokenTest extends AnyFlatSpec with Matchers {
     }
   }
 
+  it should "throw IllegalArgumentException on non-literal value not starting with $" in {
+    assertThrows[IllegalArgumentException] {
+      ExpressionToken("foo")
+    }
+  }
+
+  it should "throw IllegalArgumentException on non-literal value starting with $ but is not succeeded by ." in {
+    assertThrows[IllegalArgumentException] {
+      ExpressionToken("$foo")
+    }
+  }
+
+  it should "throw IllegalArgumentException on value starting with $ but has quotes" in {
+    assertThrows[IllegalArgumentException] {
+      ExpressionToken("$.f'oo")
+    }
+  }
+
+  it should "throw IllegalArgumentException on valuewith only" in {
+    assertThrows[IllegalArgumentException] {
+      ExpressionToken("$")
+    }
+  }
+
   "single-layer expression string" should "extract the value from the context" in {
-    val token = ExpressionToken("foo")
+    val token = ExpressionToken("$.foo")
 
     val value = token.getValue(Map("foo" -> "bar"))
 
@@ -70,26 +94,40 @@ class ExpressionTokenTest extends AnyFlatSpec with Matchers {
   }
 
   it should "throw UndefinedPropertyException if the property does not exist" in {
-    val token = ExpressionToken("foo")
+    val token = ExpressionToken("$.foo")
     assertThrows[UndefinedPropertyException] {
       token.getValue(Map())
     }
   }
 
+  it should "throw NonLiteralValueException if the final property is not a string or number" in {
+    val token = ExpressionToken("$.foo")
+    assertThrows[NonLiteralValueException] {
+      token.getValue(Map("foo" -> Map("bar" -> "baz")))
+    }
+  }
+
   "double-layer expression string" should "extract the value from the context" in {
-    val token = ExpressionToken("foo.bar")
+    val token = ExpressionToken("$.foo.bar")
 
     val value = token.getValue(Map("foo" -> Map("bar" -> "baz")))
 
     value shouldEqual "baz"
   }
 
+  it should "throw NonLiteralValueException if the final property is not a string or number" in {
+    val token = ExpressionToken("$.foo.bar")
+    assertThrows[NonLiteralValueException] {
+      token.getValue(Map("foo" -> Map("bar" ->  Map("baz" -> "bop"))))
+    }
+  }
+
   "literal expression" should "assign the value as-is" in {
-    val token = ExpressionToken("'foo'")
+    val token = ExpressionToken("'$.foo'")
 
     val value = token.getValue(Map("foo" -> "bar"))
 
-    value shouldEqual "foo"
+    value shouldEqual "$.foo"
   }
 
   "literal expression" should "assign the value as-is even with double dot" in {
@@ -124,6 +162,4 @@ class ExpressionTokenTest extends AnyFlatSpec with Matchers {
 
     value shouldEqual "f'o'o"
   }
-
-
 }

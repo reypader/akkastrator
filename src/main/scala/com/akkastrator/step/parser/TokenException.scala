@@ -8,5 +8,6 @@ abstract class TokenException(token: Token, context: Step.Context) extends Excep
 object TokenException {
 
   class UndefinedPropertyException(token: Token, context: Step.Context) extends TokenException(token, context)
+  class NonLiteralValueException(token: Token, context: Step.Context) extends TokenException(token, context)
 
 }
