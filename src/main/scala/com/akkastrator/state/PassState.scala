@@ -2,13 +2,11 @@ package com.akkastrator.state
 
 import com.fasterxml.jackson.databind.JsonNode
 import com.fasterxml.jackson.databind.node.{ArrayNode, ObjectNode, ValueNode}
-import com.jayway.jsonpath.{JsonPath, PathNotFoundException}
-import com.typesafe.scalalogging.LazyLogging
+import com.jayway.jsonpath.JsonPath
 
 import scala.util.Try
-import scala.util.matching.Regex
 
-case class PassState(result: Option[JsonNode], resultPath: JsonPath = State.CONTEXT_ROOT) extends State("Pass") {
+case class PassState(result: Option[JsonNode], inputPath: JsonPath = State.CONTEXT_ROOT, resultPath: JsonPath = State.CONTEXT_ROOT, outputPath: JsonPath = State.CONTEXT_ROOT) extends State("Pass") {
 
   private def extractValue(result: JsonNode): JsonNode =
     result match {
@@ -19,12 +17,19 @@ case class PassState(result: Option[JsonNode], resultPath: JsonPath = State.CONT
     }
 
   override def decide(context: Context): Try[Context] = Try {
-    val input: ObjectNode = context.read(State.CONTEXT_ROOT)
-    val value: JsonNode = result.map(extractValue).getOrElse(input.deepCopy())
-    if (resultPath == State.CONTEXT_ROOT) {
+    val input: JsonNode = context.read(inputPath)
+    val value: JsonNode = result.map(extractValue).getOrElse(input.deepCopy().asInstanceOf[JsonNode])
+    val newContext = if (resultPath == State.CONTEXT_ROOT) {
       State.PARSER.parse(value)
     } else {
       setValue(context, resultPath, value)
+    }
+
+    if (outputPath == State.CONTEXT_ROOT) {
+      newContext
+    } else {
+      val output: JsonNode = newContext.read(outputPath)
+      State.PARSER.parse(output)
     }
   }
 

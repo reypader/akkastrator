@@ -38,6 +38,22 @@ class PassStateTest extends AnyFlatSpec with Matchers with BeforeAndAfterEach {
     resultingContext.get.read[JsonNode]("$") shouldEqual data.read[JsonNode]("$")
   }
 
+  "No result and resultPath with inputPath" should "pass the value in inputPath" in {
+    val underTest = PassState(None, inputPath = JsonPath.compile("$.baz"))
+
+    val resultingContext = underTest.perform(data)
+
+    resultingContext.get.read[JsonNode]("$") shouldEqual om.readTree("""{"gen": "bam"}""")
+  }
+
+  "No result and resultPath with inputPath" should "return the value in outputPath" in {
+    val underTest = PassState(None, outputPath = JsonPath.compile("$.baz"))
+
+    val resultingContext = underTest.perform(data)
+
+    resultingContext.get.read[JsonNode]("$") shouldEqual om.readTree("""{"gen": "bam"}""")
+  }
+
   "result without resultPath" should "replace the context as an object" in {
     val resultJson: JsonNode = om.readTree(
       """
@@ -89,7 +105,7 @@ class PassStateTest extends AnyFlatSpec with Matchers with BeforeAndAfterEach {
           "foo" : "bar"
         }
         """)
-    val underTest = PassState(Some(resultJson), JsonPath.compile("$.result.bar"))
+    val underTest = PassState(Some(resultJson), resultPath = JsonPath.compile("$.result.bar"))
 
     val resultingContext = underTest.perform(data)
 
@@ -116,7 +132,7 @@ class PassStateTest extends AnyFlatSpec with Matchers with BeforeAndAfterEach {
   }
 
   "resultPath without result" should "nest to the context inside itself" in {
-    val underTest = PassState(None, JsonPath.compile("$.result"))
+    val underTest = PassState(None, resultPath = JsonPath.compile("$.result"))
 
     val resultingContext = underTest.perform(data)
 
