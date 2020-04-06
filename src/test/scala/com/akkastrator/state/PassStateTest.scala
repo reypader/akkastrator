@@ -1,5 +1,6 @@
 package com.akkastrator.state
 
+import com.fasterxml.jackson.databind.node.{ArrayNode, ObjectNode}
 import com.fasterxml.jackson.databind.{JsonNode, ObjectMapper, ObjectWriter}
 import com.jayway.jsonpath.{DocumentContext, JsonPath}
 import org.scalatest.BeforeAndAfterEach
@@ -37,7 +38,7 @@ class PassStateTest extends AnyFlatSpec with Matchers with BeforeAndAfterEach {
     resultingContext.get.read[JsonNode]("$") shouldEqual data.read[JsonNode]("$")
   }
 
-  "result without resultPath" should "replace the context" in {
+  "result without resultPath" should "replace the context as an object" in {
     val resultJson: JsonNode = om.readTree(
       """
         {
@@ -48,8 +49,38 @@ class PassStateTest extends AnyFlatSpec with Matchers with BeforeAndAfterEach {
 
     val resultingContext = underTest.perform(data)
 
-    resultingContext.get.read[JsonNode]("$") shouldEqual resultJson
+    resultingContext.get.read[ObjectNode]("$") shouldEqual resultJson
+    resultingContext.get.read[ObjectNode]("$").get("foo").textValue() shouldEqual "bar"
   }
+
+  it should "replace the context as an array" in {
+    val resultJson: JsonNode = om.readTree(
+      """
+        ["foo", "bar", {"baz":"bam"}]
+        """)
+    val underTest = PassState(Some(resultJson))
+
+    val resultingContext = underTest.perform(data)
+
+    resultingContext.get.read[ArrayNode]("$") shouldEqual resultJson
+    resultingContext.get.read[ArrayNode]("$").get(0).textValue() shouldEqual "foo"
+    resultingContext.get.read[ArrayNode]("$").get(1).textValue() shouldEqual "bar"
+    resultingContext.get.read[ArrayNode]("$").get(2) shouldEqual om.readTree("""{"baz":"bam"}""")
+  }
+
+  it should "replace the context as a value" in {
+    val resultJson: JsonNode = om.readTree(
+      """
+        "foo"
+        """)
+    val underTest = PassState(Some(resultJson))
+
+    val resultingContext = underTest.perform(data)
+
+    resultingContext.get.read[JsonNode]("$") shouldEqual resultJson
+    resultingContext.get.read[JsonNode]("$").asText() shouldEqual "foo"
+  }
+
 
   "result with resultPath" should "add to the context" in {
     val resultJson: JsonNode = om.readTree(

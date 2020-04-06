@@ -8,17 +8,15 @@ import com.typesafe.scalalogging.LazyLogging
 import scala.util.Try
 import scala.util.matching.Regex
 
-case class PassState(result: Option[JsonNode], resultPath: JsonPath = State.CONTEXT_ROOT) extends State("Pass") with LazyLogging {
+case class PassState(result: Option[JsonNode], resultPath: JsonPath = State.CONTEXT_ROOT) extends State("Pass") {
 
   private def extractValue(result: JsonNode): JsonNode =
     result match {
-      case value: ObjectNode => result
-      case value: ArrayNode => throw new UnsupportedOperationException()
-      case value: ValueNode => throw new UnsupportedOperationException()
+      case value: ObjectNode => value
+      case value: ArrayNode => value
+      case value: ValueNode => value
       case _ => throw new UnsupportedOperationException()
     }
-
-  val pathPattern: Regex = "(^\\$.*)\\['([a-zA-Z0-9_-]+)'\\]".r
 
   override def decide(context: Context): Try[Context] = Try {
     val input: ObjectNode = context.read(State.CONTEXT_ROOT)
@@ -32,7 +30,7 @@ case class PassState(result: Option[JsonNode], resultPath: JsonPath = State.CONT
 
 
   private def setValue(context: Context, path: JsonPath, value: JsonNode): Context = {
-    val pathPattern(parentPath, key) = path.getPath
+    val State.PATH_PATTERN(parentPath, key) = path.getPath
     var theContext = context
     if (theContext.read(parentPath) == null) {
       theContext = setValue(theContext, JsonPath.compile(parentPath), State.EMPTY_NODE)
