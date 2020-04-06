@@ -6,19 +6,40 @@ import com.jayway.jsonpath.JsonPath
 
 import scala.util.Try
 
-case class PassState(result: Option[JsonNode], inputPath: JsonPath = State.CONTEXT_ROOT, resultPath: JsonPath = State.CONTEXT_ROOT, outputPath: JsonPath = State.CONTEXT_ROOT) extends State("Pass") {
+case class PassState(result: Option[JsonNode], parameters: Option[JsonNode], inputPath: JsonPath = State.CONTEXT_ROOT, resultPath: JsonPath = State.CONTEXT_ROOT, outputPath: JsonPath = State.CONTEXT_ROOT) extends State("Pass") {
 
-  private def extractValue(result: JsonNode): JsonNode =
+  private def assignValues[T <: JsonNode](context: Context, result: T): T =
     result match {
-      case value: ObjectNode => value
-      case value: ArrayNode => value
-      case value: ValueNode => value
+      case value: ObjectNode =>
+        var copy = value.deepCopy()
+        value.fields.forEachRemaining(entry => {
+          logger.info("Reading " + entry.getKey)
+          if (entry.getKey.endsWith(".$")) {
+            logger.info("Removing " + entry.getKey)
+            copy = copy.without(entry.getKey)
+            val path = JsonPath.compile(entry.getValue.textValue())
+            val newVal: JsonNode = context.read(path)
+            copy = copy.set(entry.getKey.substring(0, entry.getKey.length - 2), newVal)
+          } else {
+            copy = copy.set(entry.getKey, assignValues(context, entry.getValue))
+          }
+        }
+        )
+        copy.asInstanceOf[T]
+      case value: ArrayNode =>
+        val copy = value.deepCopy()
+        for (i <- 0 until value.size()) {
+          val newVal = assignValues(context, value.get(i))
+          copy.set(i, newVal)
+        }
+        copy.asInstanceOf[T]
+      case value: ValueNode => value.asInstanceOf[T]
       case _ => throw new UnsupportedOperationException()
     }
 
   override def decide(context: Context): Try[Context] = Try {
-    val input: JsonNode = context.read(inputPath)
-    val value: JsonNode = result.map(extractValue).getOrElse(input.deepCopy().asInstanceOf[JsonNode])
+    val input: JsonNode = parameters.map(p => assignValues(context, p)).getOrElse(context.read(inputPath).asInstanceOf[JsonNode])
+    val value: JsonNode = result.getOrElse(input.deepCopy().asInstanceOf[JsonNode])
     val newContext = if (resultPath == State.CONTEXT_ROOT) {
       State.PARSER.parse(value)
     } else {
