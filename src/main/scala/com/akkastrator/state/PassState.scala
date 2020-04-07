@@ -13,7 +13,7 @@ case class PassState(result: Option[JsonNode],
                      outputPath: JsonPath = State.CONTEXT_ROOT,
                      next: Option[String] = None,
                      end: Boolean = false)
-  extends State("Pass", next, end) with Parameter with Result with Output with NextStep {
+  extends FreeState("Pass", next, end) with Parameter with Result with Output {
 
 
   override def decide(context: Context): Try[(String, Context)] = Try {

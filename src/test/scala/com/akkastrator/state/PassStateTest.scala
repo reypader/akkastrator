@@ -37,6 +37,7 @@ class PassStateTest extends AnyFlatSpec with Matchers with BeforeAndAfterEach {
     val (next, resultingContext) = underTest.perform(data).get
 
     resultingContext.read[JsonNode]("$") shouldEqual data.read[JsonNode]("$")
+    next shouldEqual "__END__"
   }
 
   "No result and resultPath with inputPath" should "pass the value in inputPath" in {
@@ -45,6 +46,7 @@ class PassStateTest extends AnyFlatSpec with Matchers with BeforeAndAfterEach {
     val (next, resultingContext) = underTest.perform(data).get
 
     resultingContext.read[JsonNode]("$") shouldEqual om.readTree("""{"gen": "bam"}""")
+    next shouldEqual "__END__"
   }
 
   "No result and resultPath with inputPath" should "return the value in outputPath" in {
@@ -53,6 +55,7 @@ class PassStateTest extends AnyFlatSpec with Matchers with BeforeAndAfterEach {
     val (next, resultingContext) = underTest.perform(data).get
 
     resultingContext.read[JsonNode]("$") shouldEqual om.readTree("""{"gen": "bam"}""")
+    next shouldEqual "__END__"
   }
 
   "result without resultPath" should "replace the context as an object" in {
