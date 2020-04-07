@@ -1,5 +1,6 @@
 package com.akkastrator.state
 
+import com.akkastrator.state.common.{Output, Parameter, Result, State}
 import com.fasterxml.jackson.databind.JsonNode
 import com.fasterxml.jackson.databind.node.{ArrayNode, ObjectNode, ValueNode}
 import com.jayway.jsonpath.JsonPath

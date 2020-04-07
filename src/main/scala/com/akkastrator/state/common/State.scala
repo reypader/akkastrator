@@ -1,12 +1,10 @@
-package com.akkastrator.state
+package com.akkastrator.state.common
 
-import com.fasterxml.jackson.databind.{JsonNode, ObjectMapper}
+import com.fasterxml.jackson.databind.JsonNode
 import com.jayway.jsonpath.spi.json.JacksonJsonNodeJsonProvider
 import com.jayway.jsonpath.spi.mapper.JacksonMappingProvider
-import com.jayway.jsonpath.{Configuration, DocumentContext, JsonPath, ParseContext}
-import com.jayway.jsonpath.{Option => JsonPathOption}
+import com.jayway.jsonpath.{Configuration, DocumentContext, JsonPath, ParseContext, Option => JsonPathOption}
 import com.typesafe.scalalogging.LazyLogging
-import org.slf4j.{Logger, LoggerFactory}
 
 import scala.util.matching.Regex
 import scala.util.{Failure, Success, Try}

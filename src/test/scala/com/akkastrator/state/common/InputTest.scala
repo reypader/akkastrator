@@ -1,7 +1,6 @@
-package com.akkastrator.state
+package com.akkastrator.state.common
 
-import com.fasterxml.jackson.databind.node.{ArrayNode, ObjectNode}
-import com.fasterxml.jackson.databind.{JsonNode, ObjectMapper}
+import com.fasterxml.jackson.databind.ObjectMapper
 import com.jayway.jsonpath.{DocumentContext, JsonPath}
 import org.scalatest.BeforeAndAfterEach
 import org.scalatest.flatspec.AnyFlatSpec
