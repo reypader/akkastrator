@@ -1,5 +1,5 @@
 package com.akkastrator.state.common
 
 trait NextStep {
-  def next : String
+  def next: Option[String]
 }

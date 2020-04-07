@@ -22,12 +22,18 @@ object State {
   val EMPTY_NODE: JsonNode = PARSER.parse("{}").read(CONTEXT_ROOT)
 }
 
-abstract class State(stateType: String, end: Boolean = false) extends LazyLogging{
+abstract class State(stateType: String, next: Option[String] = None, end: Boolean = false) extends LazyLogging {
+  if (end && next.isDefined) {
+    throw new IllegalArgumentException("`next` step must not be defined if `end` is true")
+  }
+  if (!end && next.isEmpty) {
+    throw new IllegalArgumentException("`next` step must be defined if `end` is false")
+  }
   type Context = DocumentContext
 
-  def decide(context: Context): Try[Context] = Success(context)
+  def decide(context: Context): Try[(String, Context)] = Success((TerminalState.END, context))
 
-  final def perform(context: Context): Try[Context] = decide(context) recoverWith {
+  final def perform(context: Context): Try[(String, Context)] = decide(context) recoverWith {
     case e: Throwable =>
       logger.error("encountered exception", e)
       e.printStackTrace()
