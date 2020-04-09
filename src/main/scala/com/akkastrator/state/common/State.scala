@@ -18,7 +18,7 @@ object State {
       .mappingProvider(new JacksonMappingProvider())
       .jsonProvider(new JacksonJsonNodeJsonProvider())
       .build())
-  val EMPTY_NODE: JsonNode = PARSER.parse("{}").read(CONTEXT_ROOT)
+  def emptyNode: JsonNode = PARSER.parse("{}").read(CONTEXT_ROOT)
 
   abstract class State(stateType: String) extends LazyLogging {
     type Context = DocumentContext
@@ -33,6 +33,9 @@ object State {
     if (!end && next.isEmpty) {
       throw new IllegalArgumentException("`next` step must be defined if `end` is false")
     }
+
+    def getNext: String = if (end) TerminalState.END else next.get
+
   }
 
 }

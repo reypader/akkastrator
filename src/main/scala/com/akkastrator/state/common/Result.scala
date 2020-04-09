@@ -27,7 +27,7 @@ trait Result {
 
     Try(theContext.read(parentPath)).recoverWith {
       case _: PathNotFoundException =>
-        theContext = setValue(theContext, JsonPath.compile(parentPath), State.EMPTY_NODE)
+        theContext = setValue(theContext, JsonPath.compile(parentPath), State.emptyNode)
         Success(true)
 
       case ex => throw StateException.ResultMappingException(ex, path, context)

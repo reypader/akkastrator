@@ -24,7 +24,4 @@ case class PassState(result: Option[JsonNode],
       val newContext = writeResult(context, effectiveInput.read(State.CONTEXT_ROOT))
       (getNext, getOutput(newContext))
     })
-
-  private def getNext = if (end) TerminalState.END else next.get
-
 }
