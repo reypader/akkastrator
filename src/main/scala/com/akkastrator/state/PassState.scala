@@ -17,11 +17,8 @@ case class PassState(result: Option[JsonNode],
 
 
   override def decide(context: Context): Try[(String, Context)] = Try {
-    val value: JsonNode = result.getOrElse {
-      val input = getInput(context)
-      input.deepCopy().asInstanceOf[JsonNode]
-    }
-    val newContext = writeResult(context, value)
+    val effectiveInput: Context = result.map(State.PARSER.parse(_)).getOrElse(getInput(context))
+    val newContext = writeResult(context, effectiveInput.read(State.CONTEXT_ROOT))
     (getNext, getOutput(newContext))
   }
 

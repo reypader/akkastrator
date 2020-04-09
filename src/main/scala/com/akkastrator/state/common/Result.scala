@@ -12,7 +12,11 @@ trait Result {
   def writeResult(context: State#Context, value: JsonNode): State#Context = if (resultPath.getPath == State.CONTEXT_ROOT.getPath) {
     State.PARSER.parse(value)
   } else {
-    setValue(context, resultPath, value)
+    var newVal = value
+    if(context.read(State.CONTEXT_ROOT).asInstanceOf[JsonNode] == value){
+      newVal = value.deepCopy()
+    }
+    setValue(context, resultPath, newVal)
   }
 
 

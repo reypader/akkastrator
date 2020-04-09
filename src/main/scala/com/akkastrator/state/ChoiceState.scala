@@ -39,11 +39,12 @@ case class ChoiceState(choices: List[TopLevelChoice],
   }
 
   override def decide(context: Context): Try[(String, Context)] = Try {
-    val result = choices.find(rule => rule.evaluate(context)).map(rule => rule.next)
+    val effectiveInput = getInput(context)
+    val result = choices.find(rule => rule.evaluate(effectiveInput)).map(rule => rule.next)
     if (result.isEmpty && default.isEmpty) {
       throw StateException.UnresolvableChoiceException(this, context)
     } else {
-      (result.getOrElse(default.get), context)
+      (result.getOrElse(default.get), getOutput(context))
     }
   }
 }

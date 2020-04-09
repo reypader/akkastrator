@@ -9,9 +9,9 @@ trait Parameter extends Input with LazyLogging {
 
   def parameter: Option[JsonNode]
 
-  override def getInput(context: State#Context): JsonNode = {
+  override def getInput(context: State#Context): State#Context = {
     val effectiveInput = super.getInput(context)
-    parameter.map(p => assignValues(context, State.PARSER.parse(effectiveInput), p)).getOrElse(effectiveInput)
+    parameter.map(p => State.PARSER.parse(assignValues(context, effectiveInput, p))).getOrElse(effectiveInput)
   }
 
   private def assignValues[T <: JsonNode](originalContext: State#Context, context: State#Context, result: T): T =

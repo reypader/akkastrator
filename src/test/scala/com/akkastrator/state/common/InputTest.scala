@@ -1,6 +1,6 @@
 package com.akkastrator.state.common
 
-import com.fasterxml.jackson.databind.ObjectMapper
+import com.fasterxml.jackson.databind.{JsonNode, ObjectMapper}
 import com.jayway.jsonpath.{DocumentContext, JsonPath}
 import org.scalatest.BeforeAndAfterEach
 import org.scalatest.flatspec.AnyFlatSpec
@@ -37,7 +37,7 @@ class InputTest extends AnyFlatSpec with Matchers with BeforeAndAfterEach {
 
     val result = Fake.getInput(data)
 
-    result shouldEqual om.readTree("""
+    result.read(State.CONTEXT_ROOT).asInstanceOf[JsonNode] shouldEqual om.readTree("""
       {
         "foo": "bar",
         "baz" : {
@@ -60,7 +60,7 @@ class InputTest extends AnyFlatSpec with Matchers with BeforeAndAfterEach {
 
     val result = Fake.getInput(data)
 
-    result shouldEqual om.readTree("""
+    result.read(State.CONTEXT_ROOT).asInstanceOf[JsonNode] shouldEqual om.readTree("""
         {
           "gen": "bam"
         }
@@ -74,7 +74,7 @@ class InputTest extends AnyFlatSpec with Matchers with BeforeAndAfterEach {
 
     val result = Fake.getInput(data)
 
-    result shouldEqual om.readTree("""
+    result.read(State.CONTEXT_ROOT).asInstanceOf[JsonNode] shouldEqual om.readTree("""
         "tam"
       """)
   }
