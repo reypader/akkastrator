@@ -5,10 +5,10 @@ import com.fasterxml.jackson.databind.node.{ArrayNode, ObjectNode}
 import com.fasterxml.jackson.databind.{JsonNode, ObjectMapper}
 import com.jayway.jsonpath.{DocumentContext, JsonPath}
 import org.scalatest.BeforeAndAfterEach
-import org.scalatest.flatspec.AnyFlatSpec
+import org.scalatest.flatspec.AsyncFlatSpec
 import org.scalatest.matchers.should.Matchers
 
-class PassStateTest extends AnyFlatSpec with Matchers with BeforeAndAfterEach {
+class PassStateTest extends AsyncFlatSpec with Matchers with BeforeAndAfterEach {
   val om: ObjectMapper = new ObjectMapper()
   var data: DocumentContext = _
 
@@ -34,28 +34,34 @@ class PassStateTest extends AnyFlatSpec with Matchers with BeforeAndAfterEach {
   "No result and resultPath" should "pass the context as-is" in {
     val underTest = PassState(None, None, end = true)
 
-    val (next, resultingContext) = underTest.perform(data).get
+    underTest.perform(data) map {
+      case (next, resultingContext) =>
 
-    resultingContext.read[JsonNode]("$") shouldEqual data.read[JsonNode]("$")
-    next shouldEqual "__END__"
+        resultingContext.read[JsonNode]("$") shouldEqual data.read[JsonNode]("$")
+        next shouldEqual "__END__"
+    }
   }
 
   "No result and resultPath with inputPath" should "pass the value in inputPath" in {
     val underTest = PassState(None, None, inputPath = JsonPath.compile("$.baz"), end = true)
 
-    val (next, resultingContext) = underTest.perform(data).get
+    underTest.perform(data) map {
+      case (next, resultingContext) =>
 
-    resultingContext.read[JsonNode]("$") shouldEqual om.readTree("""{"gen": "bam"}""")
-    next shouldEqual "__END__"
+        resultingContext.read[JsonNode]("$") shouldEqual om.readTree("""{"gen": "bam"}""")
+        next shouldEqual "__END__"
+    }
   }
 
   "No result and resultPath with inputPath" should "return the value in outputPath" in {
     val underTest = PassState(None, None, outputPath = JsonPath.compile("$.baz"), end = true)
 
-    val (next, resultingContext) = underTest.perform(data).get
+    underTest.perform(data) map {
+      case (next, resultingContext) =>
 
-    resultingContext.read[JsonNode]("$") shouldEqual om.readTree("""{"gen": "bam"}""")
-    next shouldEqual "__END__"
+        resultingContext.read[JsonNode]("$") shouldEqual om.readTree("""{"gen": "bam"}""")
+        next shouldEqual "__END__"
+    }
   }
 
   "result without resultPath" should "replace the context as an object" in {
@@ -67,11 +73,13 @@ class PassStateTest extends AnyFlatSpec with Matchers with BeforeAndAfterEach {
         """)
     val underTest = PassState(Some(resultJson), None, end = true)
 
-    val (next, resultingContext) = underTest.perform(data).get
+    underTest.perform(data) map {
+      case (next, resultingContext) =>
 
-    resultingContext.read[ObjectNode]("$") shouldEqual resultJson
-    resultingContext.read[ObjectNode]("$").get("foo").textValue() shouldEqual "bar"
-    next shouldEqual "__END__"
+        resultingContext.read[ObjectNode]("$") shouldEqual resultJson
+        resultingContext.read[ObjectNode]("$").get("foo").textValue() shouldEqual "bar"
+        next shouldEqual "__END__"
+    }
   }
 
   it should "replace the context as an array" in {
@@ -81,13 +89,14 @@ class PassStateTest extends AnyFlatSpec with Matchers with BeforeAndAfterEach {
         """)
     val underTest = PassState(Some(resultJson), None, end = true)
 
-    val (next, resultingContext) = underTest.perform(data).get
-
-    resultingContext.read[ArrayNode]("$") shouldEqual resultJson
-    resultingContext.read[ArrayNode]("$").get(0).textValue() shouldEqual "foo"
-    resultingContext.read[ArrayNode]("$").get(1).textValue() shouldEqual "bar"
-    resultingContext.read[ArrayNode]("$").get(2) shouldEqual om.readTree("""{"baz":"bam"}""")
-    next shouldEqual "__END__"
+    underTest.perform(data) map {
+      case (next, resultingContext) =>
+        resultingContext.read[ArrayNode]("$") shouldEqual resultJson
+        resultingContext.read[ArrayNode]("$").get(0).textValue() shouldEqual "foo"
+        resultingContext.read[ArrayNode]("$").get(1).textValue() shouldEqual "bar"
+        resultingContext.read[ArrayNode]("$").get(2) shouldEqual om.readTree("""{"baz":"bam"}""")
+        next shouldEqual "__END__"
+    }
   }
 
   it should "replace the context as a value" in {
@@ -97,11 +106,12 @@ class PassStateTest extends AnyFlatSpec with Matchers with BeforeAndAfterEach {
         """)
     val underTest = PassState(Some(resultJson), None, end = true)
 
-    val (next, resultingContext) = underTest.perform(data).get
-
-    resultingContext.read[JsonNode]("$") shouldEqual resultJson
-    resultingContext.read[JsonNode]("$").asText() shouldEqual "foo"
-    next shouldEqual "__END__"
+    underTest.perform(data) map {
+      case (next, resultingContext) =>
+        resultingContext.read[JsonNode]("$") shouldEqual resultJson
+        resultingContext.read[JsonNode]("$").asText() shouldEqual "foo"
+        next shouldEqual "__END__"
+    }
   }
 
 
@@ -114,10 +124,11 @@ class PassStateTest extends AnyFlatSpec with Matchers with BeforeAndAfterEach {
         """)
     val underTest = PassState(Some(resultJson), None, resultPath = JsonPath.compile("$.result.bar"), end = true)
 
-    val (next, resultingContext) = underTest.perform(data).get
+    underTest.perform(data) map {
+      case (next, resultingContext) =>
 
-    resultingContext.read[JsonNode]("$") shouldEqual om.readTree(
-      """
+        resultingContext.read[JsonNode]("$") shouldEqual om.readTree(
+          """
         {
         "result" : {
           "bar": {
@@ -136,16 +147,17 @@ class PassStateTest extends AnyFlatSpec with Matchers with BeforeAndAfterEach {
         ]
       }
         """)
-    next shouldEqual "__END__"
+        next shouldEqual "__END__"
+    }
   }
 
   "resultPath without result" should "nest to the context inside itself" in {
     val underTest = PassState(None, None, resultPath = JsonPath.compile("$.result"), end = true)
 
-    val (next, resultingContext) = underTest.perform(data).get
-
-    resultingContext.read[JsonNode]("$") shouldEqual om.readTree(
-      """
+    underTest.perform(data) map {
+      case (next, resultingContext) =>
+        resultingContext.read[JsonNode]("$") shouldEqual om.readTree(
+          """
         {
         "result" :  {
           "foo": "bar",
@@ -171,7 +183,8 @@ class PassStateTest extends AnyFlatSpec with Matchers with BeforeAndAfterEach {
         ]
       }
         """)
-    next shouldEqual "__END__"
+        next shouldEqual "__END__"
+    }
   }
 
   "parameters" should "replace the input" in {
@@ -190,10 +203,11 @@ class PassStateTest extends AnyFlatSpec with Matchers with BeforeAndAfterEach {
         """)
     val underTest = PassState(None, Some(params), end = true)
 
-    val (next, resultingContext) = underTest.perform(data).get
+    underTest.perform(data) map {
+      case (next, resultingContext) =>
 
-    resultingContext.read[JsonNode]("$") shouldEqual om.readTree(
-      """
+        resultingContext.read[JsonNode]("$") shouldEqual om.readTree(
+          """
         {
           "foo" : "bar",
           "baz" : {
@@ -207,6 +221,7 @@ class PassStateTest extends AnyFlatSpec with Matchers with BeforeAndAfterEach {
           ]
         }
         """)
-    next shouldEqual "__END__"
+        next shouldEqual "__END__"
+    }
   }
 }

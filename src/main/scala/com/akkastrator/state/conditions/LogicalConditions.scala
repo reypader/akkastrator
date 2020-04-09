@@ -2,6 +2,7 @@ package com.akkastrator.state.conditions
 
 import com.akkastrator.state.ChoiceState.{ChoiceRule, Comparison, TopLevelChoice, VariableAccess}
 import com.akkastrator.state.common.State
+import com.akkastrator.state.common.State.State
 import com.jayway.jsonpath.JsonPath
 
 object LogicalConditions {

@@ -4,6 +4,7 @@ import java.time.OffsetDateTime
 
 import com.akkastrator.state.ChoiceState.{Comparison, TopLevelChoice, VariableAccess}
 import com.akkastrator.state.common.State
+import com.akkastrator.state.common.State.State
 import com.akkastrator.state.conditions.LogicalConditions.{AbstractEqual, AbstractGreaterThan, AbstractLessThan}
 import com.fasterxml.jackson.databind.node.TextNode
 import com.jayway.jsonpath.JsonPath

@@ -1,6 +1,7 @@
 package com.akkastrator.state.common
 
 import com.akkastrator.state.StateException
+import com.akkastrator.state.common.State.State
 import com.fasterxml.jackson.databind.JsonNode
 import com.jayway.jsonpath.{JsonPath, PathNotFoundException}
 

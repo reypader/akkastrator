@@ -1,11 +1,11 @@
 package com.akkastrator.state
 
-import java.time.OffsetDateTime
-
 import com.akkastrator.state.ChoiceState.TopLevelChoice
+import com.akkastrator.state.common.State.State
 import com.akkastrator.state.common.{Input, NextStep, Output, State}
 import com.jayway.jsonpath.JsonPath
 
+import scala.concurrent.{ExecutionContext, Future}
 import scala.util.Try
 
 object ChoiceState {
@@ -38,13 +38,14 @@ case class ChoiceState(choices: List[TopLevelChoice],
     throw new IllegalArgumentException("Must have at least one choice")
   }
 
-  override def decide(context: Context): Try[(String, Context)] = Try {
-    val effectiveInput = getInput(context)
-    val result = choices.find(rule => rule.evaluate(effectiveInput)).map(rule => rule.next)
-    if (result.isEmpty && default.isEmpty) {
-      throw StateException.UnresolvableChoiceException(this, context)
-    } else {
-      (result.getOrElse(default.get), getOutput(context))
-    }
-  }
+  override def perform(context: Context)(implicit executionContext: ExecutionContext): Future[(String, Context)] =
+    Future.fromTry(Try {
+      val effectiveInput = getInput(context)
+      val result = choices.find(rule => rule.evaluate(effectiveInput)).map(rule => rule.next)
+      if (result.isEmpty && default.isEmpty) {
+        throw StateException.UnresolvableChoiceException(this, context)
+      } else {
+        (result.getOrElse(default.get), getOutput(context))
+      }
+    })
 }
