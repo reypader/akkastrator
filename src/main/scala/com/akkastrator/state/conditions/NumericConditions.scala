@@ -10,38 +10,34 @@ import com.jayway.jsonpath.JsonPath
 object NumericConditions {
 
   trait NumericSupport extends Comparison[BigDecimal] with VariableAccess[BigDecimal] {
-    def expectedValue: NumericNode
-
-    override def comparableValue: BigDecimal = expectedValue.decimalValue()
-
     override def getActualValue(context: State#Context, variable: JsonPath): BigDecimal = {
       context.read(variable).asInstanceOf[NumericNode].decimalValue()
     }
   }
 
-  abstract class AbstractNumericEquals(variable: JsonPath, numericEquals: NumericNode) extends AbstractEqual[BigDecimal](variable) with NumericSupport {
-    override def expectedValue: NumericNode = numericEquals
+  abstract class AbstractNumericEquals(variable: JsonPath, numericEquals: BigDecimal) extends AbstractEqual[BigDecimal](variable) with NumericSupport {
+    override def comparableValue: BigDecimal = numericEquals
   }
 
-  abstract class AbstractNumericLessThan(variable: JsonPath, numericLessThan: NumericNode) extends AbstractLessThan[BigDecimal](variable) with NumericSupport {
-    override def expectedValue: NumericNode = numericLessThan
+  abstract class AbstractNumericLessThan(variable: JsonPath, numericLessThan: BigDecimal) extends AbstractLessThan[BigDecimal](variable) with NumericSupport {
+    override def comparableValue: BigDecimal = numericLessThan
   }
 
-  abstract class AbstractNumericGreaterThan(variable: JsonPath, numericGreaterThan: NumericNode) extends AbstractGreaterThan[BigDecimal](variable) with NumericSupport {
-    override def expectedValue: NumericNode = numericGreaterThan
+  abstract class AbstractNumericGreaterThan(variable: JsonPath, numericGreaterThan: BigDecimal) extends AbstractGreaterThan[BigDecimal](variable) with NumericSupport {
+    override def comparableValue: BigDecimal = numericGreaterThan
   }
 
-  case class NumericEquals(variable: JsonPath, numericEquals: NumericNode) extends AbstractNumericEquals(variable, numericEquals)
+  case class NumericEquals(variable: JsonPath, numericEquals: BigDecimal) extends AbstractNumericEquals(variable, numericEquals)
 
-  case class NumericLessThan(variable: JsonPath, numericLessThan: NumericNode) extends AbstractNumericLessThan(variable, numericLessThan)
+  case class NumericLessThan(variable: JsonPath, numericLessThan: BigDecimal) extends AbstractNumericLessThan(variable, numericLessThan)
 
-  case class NumericGreaterThan(variable: JsonPath, numericGreaterThan: NumericNode) extends AbstractNumericGreaterThan(variable, numericGreaterThan)
+  case class NumericGreaterThan(variable: JsonPath, numericGreaterThan: BigDecimal) extends AbstractNumericGreaterThan(variable, numericGreaterThan)
 
 
-  case class TopNumericEquals(variable: JsonPath, numericEquals: NumericNode, next: String) extends AbstractNumericEquals(variable, numericEquals) with TopLevelChoice
+  case class TopNumericEquals(variable: JsonPath, numericEquals: BigDecimal, next: String) extends AbstractNumericEquals(variable, numericEquals) with TopLevelChoice
 
-  case class TopNumericLessThan(variable: JsonPath, numericLessThan: NumericNode, next: String) extends AbstractNumericLessThan(variable, numericLessThan) with TopLevelChoice
+  case class TopNumericLessThan(variable: JsonPath, numericLessThan: BigDecimal, next: String) extends AbstractNumericLessThan(variable, numericLessThan) with TopLevelChoice
 
-  case class TopNumericGreaterThan(variable: JsonPath, numericGreaterThan: NumericNode, next: String) extends AbstractNumericGreaterThan(variable, numericGreaterThan) with TopLevelChoice
+  case class TopNumericGreaterThan(variable: JsonPath, numericGreaterThan: BigDecimal, next: String) extends AbstractNumericGreaterThan(variable, numericGreaterThan) with TopLevelChoice
 
 }

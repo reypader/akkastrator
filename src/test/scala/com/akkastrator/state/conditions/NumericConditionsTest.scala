@@ -24,48 +24,48 @@ class NumericConditionsTest extends AnyFlatSpec with Matchers with BeforeAndAfte
   }
 
   "NumericEquals" should "evaluate to false if not equal" in {
-    val underTest1 = NumericConditions.NumericEquals(JsonPath.compile("$.foo"), om.readTree("""1.24""").asInstanceOf[NumericNode])
-    val underTest2 = NumericConditions.NumericEquals(JsonPath.compile("$.bar"), om.readTree("""-5""").asInstanceOf[NumericNode])
+    val underTest1 = NumericConditions.NumericEquals(JsonPath.compile("$.foo"),BigDecimal("1.24"))
+    val underTest2 = NumericConditions.NumericEquals(JsonPath.compile("$.bar"),BigDecimal("-5"))
 
     underTest1.evaluate(data) shouldEqual false
     underTest2.evaluate(data) shouldEqual false
   }
 
   it should "evaluate to true if equal" in {
-    val underTest1 = NumericConditions.NumericEquals(JsonPath.compile("$.foo"), om.readTree("""1.23""").asInstanceOf[NumericNode])
-    val underTest2 = NumericConditions.NumericEquals(JsonPath.compile("$.bar"), om.readTree("""5""").asInstanceOf[NumericNode])
+    val underTest1 = NumericConditions.NumericEquals(JsonPath.compile("$.foo"),BigDecimal("1.23"))
+    val underTest2 = NumericConditions.NumericEquals(JsonPath.compile("$.bar"),BigDecimal("5"))
 
     underTest1.evaluate(data) shouldEqual true
     underTest2.evaluate(data) shouldEqual true
   }
 
   "NumericLessThan" should "evaluate to false if not less than" in {
-    val underTest1 = NumericConditions.NumericLessThan(JsonPath.compile("$.foo"), om.readTree("""1.22""").asInstanceOf[NumericNode])
-    val underTest2 = NumericConditions.NumericLessThan(JsonPath.compile("$.bar"), om.readTree("""-5""").asInstanceOf[NumericNode])
+    val underTest1 = NumericConditions.NumericLessThan(JsonPath.compile("$.foo"),BigDecimal("1.22"))
+    val underTest2 = NumericConditions.NumericLessThan(JsonPath.compile("$.bar"),BigDecimal("-5"))
 
     underTest1.evaluate(data) shouldEqual false
     underTest2.evaluate(data) shouldEqual false
   }
 
   it should "evaluate to true if less than" in {
-    val underTest1 = NumericConditions.NumericLessThan(JsonPath.compile("$.foo"), om.readTree("""1.24""").asInstanceOf[NumericNode])
-    val underTest2 = NumericConditions.NumericLessThan(JsonPath.compile("$.bar"), om.readTree("""50""").asInstanceOf[NumericNode])
+    val underTest1 = NumericConditions.NumericLessThan(JsonPath.compile("$.foo"),BigDecimal("1.24"))
+    val underTest2 = NumericConditions.NumericLessThan(JsonPath.compile("$.bar"),BigDecimal("50"))
 
     underTest1.evaluate(data) shouldEqual true
     underTest2.evaluate(data) shouldEqual true
   }
 
   "NumericGreaterThan" should "evaluate to false if not greater than" in {
-    val underTest1 = NumericConditions.NumericGreaterThan(JsonPath.compile("$.foo"), om.readTree("""1.231""").asInstanceOf[NumericNode])
-    val underTest2 = NumericConditions.NumericGreaterThan(JsonPath.compile("$.bar"), om.readTree("""5""").asInstanceOf[NumericNode])
+    val underTest1 = NumericConditions.NumericGreaterThan(JsonPath.compile("$.foo"),BigDecimal("1.231"))
+    val underTest2 = NumericConditions.NumericGreaterThan(JsonPath.compile("$.bar"),BigDecimal("5"))
 
     underTest1.evaluate(data) shouldEqual false
     underTest2.evaluate(data) shouldEqual false
   }
 
   it should "evaluate to true if greater than" in {
-    val underTest1 = NumericConditions.NumericGreaterThan(JsonPath.compile("$.foo"), om.readTree("""1.2299""").asInstanceOf[NumericNode])
-    val underTest2 = NumericConditions.NumericGreaterThan(JsonPath.compile("$.bar"), om.readTree("""4.999""").asInstanceOf[NumericNode])
+    val underTest1 = NumericConditions.NumericGreaterThan(JsonPath.compile("$.foo"),BigDecimal("1.2299"))
+    val underTest2 = NumericConditions.NumericGreaterThan(JsonPath.compile("$.bar"),BigDecimal("4.999"))
 
     underTest1.evaluate(data) shouldEqual true
     underTest2.evaluate(data) shouldEqual true

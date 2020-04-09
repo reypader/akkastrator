@@ -5,9 +5,15 @@ import com.jayway.jsonpath.JsonPath
 
 object StateException {
 
-  case class StateFailure(error: String, cause: String) extends Exception
+  trait ErrorDetails {
+    def error: String
 
-  case class StateError(cause: Throwable) extends Exception(cause)
+    def cause: String
+  }
+
+  case class StateFailure(error: String, cause: String) extends Exception with ErrorDetails
+
+  case class StateError(error: String, cause: String, rootCause: Throwable) extends Exception(rootCause) with ErrorDetails
 
   case class UnresolvableChoiceException(state: State, context: State#Context) extends Exception
 

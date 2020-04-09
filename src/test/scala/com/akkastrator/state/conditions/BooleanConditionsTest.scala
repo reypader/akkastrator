@@ -24,16 +24,16 @@ class BooleanConditionsTest extends AnyFlatSpec with Matchers with BeforeAndAfte
   }
 
   "BooleanEquals" should "evaluate to false if not equal" in {
-    val underTest1 = BooleanConditions.BooleanEquals(JsonPath.compile("$.foo"), om.readTree("""false""").asInstanceOf[BooleanNode])
-    val underTest2 = BooleanConditions.BooleanEquals(JsonPath.compile("$.bar"), om.readTree("""true""").asInstanceOf[BooleanNode])
+    val underTest1 = BooleanConditions.BooleanEquals(JsonPath.compile("$.foo"), booleanEquals = false)
+    val underTest2 = BooleanConditions.BooleanEquals(JsonPath.compile("$.bar"), booleanEquals = true)
 
     underTest1.evaluate(data) shouldEqual false
     underTest2.evaluate(data) shouldEqual false
   }
 
   it should "evaluate to true if equal" in {
-    val underTest1 = BooleanConditions.BooleanEquals(JsonPath.compile("$.foo"), om.readTree("""true""").asInstanceOf[BooleanNode])
-    val underTest2 = BooleanConditions.BooleanEquals(JsonPath.compile("$.bar"), om.readTree("""false""").asInstanceOf[BooleanNode])
+    val underTest1 = BooleanConditions.BooleanEquals(JsonPath.compile("$.foo"), booleanEquals = true)
+    val underTest2 = BooleanConditions.BooleanEquals(JsonPath.compile("$.bar"), booleanEquals = false)
 
     underTest1.evaluate(data) shouldEqual true
     underTest2.evaluate(data) shouldEqual true

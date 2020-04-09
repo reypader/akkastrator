@@ -34,7 +34,7 @@ class ChoiceStateTest extends AsyncFlatSpec with Matchers with BeforeAndAfterEac
 
   "StringEquals" should "match the string exactly and return (next, context)" in {
     val underTest = ChoiceState(choices = List(
-      StringConditions.TopStringEquals(JsonPath.compile("$.foo"), om.readTree(""""bar"""").asInstanceOf[TextNode], "NEXT")
+      StringConditions.TopStringEquals(JsonPath.compile("$.foo"), "bar", "NEXT")
     ), Some("DEFAULT"))
 
     underTest.perform(data) map {
@@ -46,7 +46,7 @@ class ChoiceStateTest extends AsyncFlatSpec with Matchers with BeforeAndAfterEac
 
   it should "fail to match the string exactly and return (default, context)" in {
     val underTest = ChoiceState(choices = List(
-      StringConditions.TopStringEquals(JsonPath.compile("$.foo"), om.readTree(""""baz"""").asInstanceOf[TextNode], "NEXT")
+      StringConditions.TopStringEquals(JsonPath.compile("$.foo"), "baz", "NEXT")
     ), Some("DEFAULT"))
 
     underTest.perform(data) map {
@@ -58,7 +58,7 @@ class ChoiceStateTest extends AsyncFlatSpec with Matchers with BeforeAndAfterEac
 
   "Not StringEquals" should "match the string exactly and return (next, context)" in {
     val underTest = ChoiceState(choices = List(
-      LogicalConditions.TopNot(StringConditions.StringEquals(JsonPath.compile("$.foo"), om.readTree(""""baz"""").asInstanceOf[TextNode]), "NEXT")
+      LogicalConditions.TopNot(StringConditions.StringEquals(JsonPath.compile("$.foo"), "baz"), "NEXT")
     ), Some("DEFAULT"))
 
     underTest.perform(data) map {
@@ -70,7 +70,7 @@ class ChoiceStateTest extends AsyncFlatSpec with Matchers with BeforeAndAfterEac
 
   it should "fail to match the string exactly and return (default, context)" in {
     val underTest = ChoiceState(choices = List(
-      LogicalConditions.TopNot(StringConditions.StringEquals(JsonPath.compile("$.foo"), om.readTree(""""bar"""").asInstanceOf[TextNode]), "NEXT")
+      LogicalConditions.TopNot(StringConditions.StringEquals(JsonPath.compile("$.foo"), "bar"), "NEXT")
     ), Some("DEFAULT"))
 
     underTest.perform(data) map {

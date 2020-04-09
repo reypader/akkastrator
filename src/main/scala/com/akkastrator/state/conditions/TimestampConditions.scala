@@ -12,51 +12,46 @@ import com.jayway.jsonpath.JsonPath
 object TimestampConditions {
 
   trait TimestampSupport extends Comparison[OffsetDateTime] with VariableAccess[OffsetDateTime] {
-    def expectedValue: TextNode
-
-    override def comparableValue: OffsetDateTime = OffsetDateTime.parse(expectedValue.textValue())
-
     override def getActualValue(context: State#Context, variable: JsonPath): OffsetDateTime = {
       OffsetDateTime.parse(context.read(variable).asInstanceOf[TextNode].textValue())
     }
   }
 
-  abstract class AbstractTimestampEquals(variable: JsonPath, timestampEquals: TextNode) extends AbstractEqual[OffsetDateTime](variable) with TimestampSupport {
-    override def expectedValue: TextNode = timestampEquals
-
+  abstract class AbstractTimestampEquals(variable: JsonPath, timestampEquals: String) extends AbstractEqual[OffsetDateTime](variable) with TimestampSupport {
+    override def comparableValue: OffsetDateTime = OffsetDateTime.parse(timestampEquals)
     override def evaluate(context: State#Context): Boolean = {
       val actualValue = getActualValue(context, variable)
       comparableValue.isEqual(actualValue)
     }
   }
 
-  abstract class AbstractTimestampLessThan(variable: JsonPath, timestampLessThan: TextNode) extends AbstractLessThan[OffsetDateTime](variable) with TimestampSupport {
-    override def expectedValue: TextNode = timestampLessThan
+  abstract class AbstractTimestampLessThan(variable: JsonPath, timestampLessThan: String) extends AbstractLessThan[OffsetDateTime](variable) with TimestampSupport {
+    override def comparableValue: OffsetDateTime = OffsetDateTime.parse(timestampLessThan)
     override def evaluate(context: State#Context): Boolean = {
       val actualValue = getActualValue(context, variable)
       actualValue.isBefore(comparableValue)
     }
   }
 
-  abstract class AbstractTimestampGreaterThan(variable: JsonPath, timestampGreaterThan: TextNode) extends AbstractGreaterThan[OffsetDateTime](variable) with TimestampSupport {
-    override def expectedValue: TextNode = timestampGreaterThan
+  abstract class AbstractTimestampGreaterThan(variable: JsonPath, timestampGreaterThan: String) extends AbstractGreaterThan[OffsetDateTime](variable) with TimestampSupport {
+    override def comparableValue: OffsetDateTime = OffsetDateTime.parse(timestampGreaterThan)
     override def evaluate(context: State#Context): Boolean = {
       val actualValue = getActualValue(context, variable)
       actualValue.isAfter(comparableValue)
     }
   }
 
-  case class TimestampEquals(variable: JsonPath, timestampEquals: TextNode) extends AbstractTimestampEquals(variable, timestampEquals)
+  case class TimestampEquals(variable: JsonPath, timestampEquals: String) extends AbstractTimestampEquals(variable, timestampEquals)
 
-  case class TimestampLessThan(variable: JsonPath, timestampLessThan: TextNode) extends AbstractTimestampLessThan(variable, timestampLessThan)
+  case class TimestampLessThan(variable: JsonPath, timestampLessThan: String) extends AbstractTimestampLessThan(variable, timestampLessThan)
 
-  case class TimestampGreaterThan(variable: JsonPath, timestampGreaterThan: TextNode) extends AbstractTimestampGreaterThan(variable, timestampGreaterThan)
+  case class TimestampGreaterThan(variable: JsonPath, timestampGreaterThan: String) extends AbstractTimestampGreaterThan(variable, timestampGreaterThan)
 
 
-  case class TopTimestampEquals(variable: JsonPath, timestampEquals: TextNode, next: String) extends AbstractTimestampEquals(variable, timestampEquals) with TopLevelChoice
+  case class TopTimestampEquals(variable: JsonPath, timestampEquals: String, next: String) extends AbstractTimestampEquals(variable, timestampEquals) with TopLevelChoice
 
-  case class TopTimestampLessThan(variable: JsonPath, timestampLessThan: TextNode, next: String) extends AbstractTimestampLessThan(variable, timestampLessThan) with TopLevelChoice
+  case class TopTimestampLessThan(variable: JsonPath, timestampLessThan: String, next: String) extends AbstractTimestampLessThan(variable, timestampLessThan) with TopLevelChoice
 
-  case class TopTimestampGreaterThan(variable: JsonPath, timestampGreaterThan: TextNode, next: String) extends AbstractTimestampGreaterThan(variable, timestampGreaterThan) with TopLevelChoice
+  case class TopTimestampGreaterThan(variable: JsonPath, timestampGreaterThan: String, next: String) extends AbstractTimestampGreaterThan(variable, timestampGreaterThan) with TopLevelChoice
 
 }
