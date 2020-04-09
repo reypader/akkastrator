@@ -1,7 +1,8 @@
 package com.akkastrator.state
 
 import com.akkastrator.state.common.State
-import com.fasterxml.jackson.databind.node.ValueNode
+import com.akkastrator.state.conditions.{LogicalConditions, StringConditions}
+import com.fasterxml.jackson.databind.node.TextNode
 import com.fasterxml.jackson.databind.{JsonNode, ObjectMapper}
 import com.jayway.jsonpath.{DocumentContext, JsonPath}
 import org.scalatest.BeforeAndAfterEach
@@ -34,7 +35,7 @@ class ChoiceStateTest extends AnyFlatSpec with Matchers with BeforeAndAfterEach 
 
   "StringEquals" should "match the string exactly and return (next, context)" in {
     val underTest = ChoiceState(choices = List(
-      ChoiceState.TopStringEquals(JsonPath.compile("$.foo"), om.readTree(""""bar"""").asInstanceOf[ValueNode], "NEXT")
+      StringConditions.TopStringEquals(JsonPath.compile("$.foo"), om.readTree(""""bar"""").asInstanceOf[TextNode], "NEXT")
     ), Some("DEFAULT"))
 
     val (next, resultingContext) = underTest.decide(data).get
@@ -45,7 +46,7 @@ class ChoiceStateTest extends AnyFlatSpec with Matchers with BeforeAndAfterEach 
 
   it should "fail to match the string exactly and return (default, context)" in {
     val underTest = ChoiceState(choices = List(
-      ChoiceState.TopStringEquals(JsonPath.compile("$.foo"), om.readTree(""""baz"""").asInstanceOf[ValueNode], "NEXT")
+      StringConditions.TopStringEquals(JsonPath.compile("$.foo"), om.readTree(""""baz"""").asInstanceOf[TextNode], "NEXT")
     ), Some("DEFAULT"))
 
     val (next, resultingContext) = underTest.decide(data).get
@@ -56,7 +57,7 @@ class ChoiceStateTest extends AnyFlatSpec with Matchers with BeforeAndAfterEach 
 
   "Not StringEquals" should "match the string exactly and return (next, context)" in {
     val underTest = ChoiceState(choices = List(
-      ChoiceState.TopNot(ChoiceState.StringEquals(JsonPath.compile("$.foo"), om.readTree(""""baz"""").asInstanceOf[ValueNode]), "NEXT")
+      LogicalConditions.TopNot(StringConditions.StringEquals(JsonPath.compile("$.foo"), om.readTree(""""baz"""").asInstanceOf[TextNode]), "NEXT")
     ), Some("DEFAULT"))
 
     val (next, resultingContext) = underTest.decide(data).get
@@ -67,7 +68,7 @@ class ChoiceStateTest extends AnyFlatSpec with Matchers with BeforeAndAfterEach 
 
   it should "fail to match the string exactly and return (default, context)" in {
     val underTest = ChoiceState(choices = List(
-      ChoiceState.TopNot(ChoiceState.StringEquals(JsonPath.compile("$.foo"), om.readTree(""""bar"""").asInstanceOf[ValueNode]), "NEXT")
+      LogicalConditions.TopNot(StringConditions.StringEquals(JsonPath.compile("$.foo"), om.readTree(""""bar"""").asInstanceOf[TextNode]), "NEXT")
     ), Some("DEFAULT"))
 
     val (next, resultingContext) = underTest.decide(data).get

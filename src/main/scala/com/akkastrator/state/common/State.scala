@@ -15,7 +15,6 @@ object State {
   val PARSER: ParseContext = JsonPath.using(
     Configuration
       .builder()
-      .options(JsonPathOption.SUPPRESS_EXCEPTIONS) // TODO: Needs to be configurable for users
       .mappingProvider(new JacksonMappingProvider())
       .jsonProvider(new JacksonJsonNodeJsonProvider())
       .build())
