@@ -18,13 +18,8 @@ object Step {
       .mappingProvider(new JacksonMappingProvider())
       .jsonProvider(new JacksonJsonNodeJsonProvider())
       .build())
+
   def emptyNode: JsonNode = PARSER.parse("{}").read(CONTEXT_ROOT)
-
-  abstract class Step(stateType: String) extends LazyLogging {
-    type Context = DocumentContext
-
-    def perform(context: Context)(implicit executionContext: ExecutionContext): Future[(String, Context)]
-  }
 
   abstract class FreeStep(stepType: String, next: Option[String] = None, end: Boolean = false) extends Step(stepType) {
     if (end && next.isDefined) {
@@ -40,3 +35,8 @@ object Step {
 
 }
 
+abstract class Step(stateType: String, comment: Option[String] = None) extends LazyLogging {
+  type Context = DocumentContext
+
+  def perform(context: Context)(implicit executionContext: ExecutionContext): Future[(String, Context)] = Future.successful(TerminalStep.END, context)
+}

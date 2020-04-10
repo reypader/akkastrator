@@ -1,6 +1,6 @@
 package com.akkastrator.state
 
-import com.akkastrator.state.common.Step.Step
+import com.akkastrator.state.common.Step
 import com.jayway.jsonpath.JsonPath
 
 object StateException {

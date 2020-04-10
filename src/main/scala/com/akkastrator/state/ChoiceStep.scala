@@ -1,31 +1,11 @@
 package com.akkastrator.state
 
-import com.akkastrator.state.ChoiceStep.TopLevelChoice
-import com.akkastrator.state.common.Step.Step
-import com.akkastrator.state.common.{Input, NextStep, Output, Step}
+import com.akkastrator.state.common.{Input, Output, Step}
+import com.akkastrator.state.conditions.Choices.TopLevelChoice
 import com.jayway.jsonpath.JsonPath
 
 import scala.concurrent.{ExecutionContext, Future}
 import scala.util.Try
-
-object ChoiceStep {
-
-  trait ChoiceRule {
-    def evaluate(context: Step#Context): Boolean
-  }
-
-  trait Comparison[T] {
-    def comparableValue: T
-  }
-
-  trait VariableAccess[T] {
-    def getActualValue(context: Step#Context, variable: JsonPath): T
-  }
-
-  trait TopLevelChoice extends ChoiceRule with NextStep
-
-
-}
 
 
 case class ChoiceStep(choices: List[TopLevelChoice],

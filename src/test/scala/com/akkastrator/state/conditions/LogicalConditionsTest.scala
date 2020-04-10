@@ -1,7 +1,7 @@
 package com.akkastrator.state.conditions
 
-import com.akkastrator.state.ChoiceStep.ChoiceRule
 import com.akkastrator.state.common.Step
+import com.akkastrator.state.conditions.Choices.ChoiceRule
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.jayway.jsonpath.DocumentContext
 import org.mockito.Mockito._

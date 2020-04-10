@@ -1,13 +1,13 @@
 package com.akkastrator.state
 
 import com.akkastrator.state.common.Step
+import com.akkastrator.state.conditions.Choices.TopLevelChoice
 import com.akkastrator.state.conditions.{LogicalConditions, StringConditions}
-import com.fasterxml.jackson.databind.node.TextNode
 import com.fasterxml.jackson.databind.{JsonNode, ObjectMapper}
 import com.jayway.jsonpath.{DocumentContext, JsonPath}
-import org.scalatest.matchers.should.Matchers
 import org.scalatest.BeforeAndAfterEach
 import org.scalatest.flatspec.AsyncFlatSpec
+import org.scalatest.matchers.should.Matchers
 
 class ChoiceStepTest extends AsyncFlatSpec with Matchers with BeforeAndAfterEach {
   val om: ObjectMapper = new ObjectMapper()
@@ -33,8 +33,13 @@ class ChoiceStepTest extends AsyncFlatSpec with Matchers with BeforeAndAfterEach
   }
 
   "StringEquals" should "match the string exactly and return (next, context)" in {
+    val condition = StringConditions.StringEquals(JsonPath.compile("$.foo"), "bar")
     val underTest = ChoiceStep(choices = List(
-      StringConditions.TopStringEquals(JsonPath.compile("$.foo"), "bar", "NEXT")
+      new TopLevelChoice {
+        override def next: String = "NEXT"
+
+        override def evaluate(context: Step#Context): Boolean = condition.evaluate(context)
+      }
     ), Some("DEFAULT"))
 
     underTest.perform(data) map {
@@ -45,8 +50,13 @@ class ChoiceStepTest extends AsyncFlatSpec with Matchers with BeforeAndAfterEach
   }
 
   it should "fail to match the string exactly and return (default, context)" in {
+    val condition = StringConditions.StringEquals(JsonPath.compile("$.foo"), "baz")
     val underTest = ChoiceStep(choices = List(
-      StringConditions.TopStringEquals(JsonPath.compile("$.foo"), "baz", "NEXT")
+      new TopLevelChoice {
+        override def next: String = "NEXT"
+
+        override def evaluate(context: Step#Context): Boolean = condition.evaluate(context)
+      }
     ), Some("DEFAULT"))
 
     underTest.perform(data) map {

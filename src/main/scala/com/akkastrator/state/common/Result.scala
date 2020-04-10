@@ -1,7 +1,6 @@
 package com.akkastrator.state.common
 
 import com.akkastrator.state.StateException
-import com.akkastrator.state.common.Step.Step
 import com.fasterxml.jackson.databind.JsonNode
 import com.jayway.jsonpath.{JsonPath, PathNotFoundException}
 
@@ -14,7 +13,7 @@ trait Result {
     Step.PARSER.parse(value)
   } else {
     var newVal = value
-    if(context.read(Step.CONTEXT_ROOT).asInstanceOf[JsonNode] == value){
+    if (context.read(Step.CONTEXT_ROOT).asInstanceOf[JsonNode] == value) {
       newVal = value.deepCopy()
     }
     setValue(context, resultPath, newVal)

@@ -1,7 +1,7 @@
 package com.akkastrator.state.conditions
 
-import com.akkastrator.state.ChoiceStep.{Comparison, TopLevelChoice, VariableAccess}
-import com.akkastrator.state.common.Step.Step
+import com.akkastrator.state.common.Step
+import com.akkastrator.state.conditions.Choices._
 import com.akkastrator.state.conditions.LogicalConditions.AbstractEqual
 import com.fasterxml.jackson.databind.node.BooleanNode
 import com.jayway.jsonpath.JsonPath

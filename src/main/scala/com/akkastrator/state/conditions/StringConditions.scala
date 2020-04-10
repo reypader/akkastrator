@@ -1,9 +1,8 @@
 package com.akkastrator.state.conditions
 
-import com.akkastrator.state.ChoiceStep.{Comparison, TopLevelChoice, VariableAccess}
 import com.akkastrator.state.common.Step
-import com.akkastrator.state.common.Step.Step
-import com.akkastrator.state.conditions.LogicalConditions.{AbstractEqual, AbstractGreaterThan, AbstractLessThan}
+import com.akkastrator.state.conditions.Choices._
+import com.akkastrator.state.conditions.LogicalConditions._
 import com.fasterxml.jackson.databind.node.TextNode
 import com.jayway.jsonpath.JsonPath
 
@@ -23,21 +22,27 @@ object StringConditions {
     override def comparableValue: String = stringLessThan
   }
 
+  abstract class AbstractStringLessThanEquals(variable: JsonPath, stringLessThanEquals: String) extends AbstractLessThanEquals[String](variable) with StringSupport {
+    override def comparableValue: String = stringLessThanEquals
+  }
+
   abstract class AbstractStringGreaterThan(variable: JsonPath, stringGreaterThan: String) extends AbstractGreaterThan[String](variable) with StringSupport {
     override def comparableValue: String = stringGreaterThan
+  }
+
+  abstract class AbstractStringGreaterThanEquals(variable: JsonPath, stringGreaterThanEquals: String) extends AbstractGreaterThanEquals[String](variable) with StringSupport {
+    override def comparableValue: String = stringGreaterThanEquals
   }
 
   case class StringEquals(variable: JsonPath, stringEquals: String) extends AbstractStringEquals(variable, stringEquals)
 
   case class StringLessThan(variable: JsonPath, stringLessThan: String) extends AbstractStringLessThan(variable, stringLessThan)
 
+  case class StringLessThanEquals(variable: JsonPath, stringLessThanEquals: String) extends AbstractStringLessThanEquals(variable, stringLessThanEquals)
+
   case class StringGreaterThan(variable: JsonPath, stringGreaterThan: String) extends AbstractStringGreaterThan(variable, stringGreaterThan)
 
+  case class StringGreaterThanEquals(variable: JsonPath, stringGreaterThanEquals: String) extends AbstractStringGreaterThanEquals(variable, stringGreaterThanEquals)
 
-  case class TopStringEquals(variable: JsonPath, stringEquals: String, next: String) extends AbstractStringEquals(variable, stringEquals) with TopLevelChoice
-
-  case class TopStringLessThan(variable: JsonPath, stringLessThan: String, next: String) extends AbstractStringLessThan(variable, stringLessThan) with TopLevelChoice
-
-  case class TopStringGreaterThan(variable: JsonPath, stringGreaterThan: String, next: String) extends AbstractStringGreaterThan(variable, stringGreaterThan) with TopLevelChoice
 
 }

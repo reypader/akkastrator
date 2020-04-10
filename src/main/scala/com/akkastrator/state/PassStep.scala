@@ -18,7 +18,7 @@ case class PassStep(result: Option[JsonNode],
   extends FreeStep("Pass", next, end) with Parameter with Result with Output {
 
 
-  def perform(context: Context)(implicit executionContext: ExecutionContext): Future[(String, Context)] =
+  override def perform(context: Context)(implicit executionContext: ExecutionContext): Future[(String, Context)] =
     Future.fromTry(Try {
       val effectiveInput: Context = result.map(Step.PARSER.parse(_)).getOrElse(getInput(context))
       val newContext = writeResult(context, effectiveInput.read(Step.CONTEXT_ROOT))

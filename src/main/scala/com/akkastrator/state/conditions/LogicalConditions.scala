@@ -1,8 +1,7 @@
 package com.akkastrator.state.conditions
 
-import com.akkastrator.state.ChoiceStep.{ChoiceRule, Comparison, TopLevelChoice, VariableAccess}
 import com.akkastrator.state.common.Step
-import com.akkastrator.state.common.Step.Step
+import com.akkastrator.state.conditions.Choices._
 import com.jayway.jsonpath.JsonPath
 
 object LogicalConditions {
@@ -21,10 +20,24 @@ object LogicalConditions {
     }
   }
 
+  abstract class AbstractLessThanEquals[T <: Comparable[T]](variable: JsonPath) extends ChoiceRule with Comparison[T] with VariableAccess[T] {
+    def evaluate(context: Step#Context): Boolean = {
+      val actualValue = getActualValue(context, variable)
+      actualValue.compareTo(comparableValue) <= 0
+    }
+  }
+
   abstract class AbstractGreaterThan[T <: Comparable[T]](variable: JsonPath) extends ChoiceRule with Comparison[T] with VariableAccess[T] {
     def evaluate(context: Step#Context): Boolean = {
       val actualValue = getActualValue(context, variable)
       actualValue.compareTo(comparableValue) > 0
+    }
+  }
+
+  abstract class AbstractGreaterThanEquals[T <: Comparable[T]](variable: JsonPath) extends ChoiceRule with Comparison[T] with VariableAccess[T] {
+    def evaluate(context: Step#Context): Boolean = {
+      val actualValue = getActualValue(context, variable)
+      actualValue.compareTo(comparableValue) >= 0
     }
   }
 

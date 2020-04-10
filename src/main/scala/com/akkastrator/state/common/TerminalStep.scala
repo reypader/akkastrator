@@ -1,7 +1,6 @@
 package com.akkastrator.state.common
 
 import com.akkastrator.state.StateException
-import com.akkastrator.state.common.Step.Step
 import com.jayway.jsonpath.JsonPath
 
 import scala.concurrent.{ExecutionContext, Future}

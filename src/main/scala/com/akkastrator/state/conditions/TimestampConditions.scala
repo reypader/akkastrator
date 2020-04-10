@@ -2,10 +2,9 @@ package com.akkastrator.state.conditions
 
 import java.time.OffsetDateTime
 
-import com.akkastrator.state.ChoiceStep.{Comparison, TopLevelChoice, VariableAccess}
 import com.akkastrator.state.common.Step
-import com.akkastrator.state.common.Step.Step
-import com.akkastrator.state.conditions.LogicalConditions.{AbstractEqual, AbstractGreaterThan, AbstractLessThan}
+import com.akkastrator.state.conditions.Choices._
+import com.akkastrator.state.conditions.LogicalConditions._
 import com.fasterxml.jackson.databind.node.TextNode
 import com.jayway.jsonpath.JsonPath
 
@@ -19,6 +18,7 @@ object TimestampConditions {
 
   abstract class AbstractTimestampEquals(variable: JsonPath, timestampEquals: String) extends AbstractEqual[OffsetDateTime](variable) with TimestampSupport {
     override def comparableValue: OffsetDateTime = OffsetDateTime.parse(timestampEquals)
+
     override def evaluate(context: Step#Context): Boolean = {
       val actualValue = getActualValue(context, variable)
       comparableValue.isEqual(actualValue)
@@ -27,17 +27,37 @@ object TimestampConditions {
 
   abstract class AbstractTimestampLessThan(variable: JsonPath, timestampLessThan: String) extends AbstractLessThan[OffsetDateTime](variable) with TimestampSupport {
     override def comparableValue: OffsetDateTime = OffsetDateTime.parse(timestampLessThan)
+
     override def evaluate(context: Step#Context): Boolean = {
       val actualValue = getActualValue(context, variable)
       actualValue.isBefore(comparableValue)
     }
   }
 
+  abstract class AbstractTimestampLessThanEquals(variable: JsonPath, timestampLessThanEquals: String) extends AbstractLessThanEquals[OffsetDateTime](variable) with TimestampSupport {
+    override def comparableValue: OffsetDateTime = OffsetDateTime.parse(timestampLessThanEquals)
+
+    override def evaluate(context: Step#Context): Boolean = {
+      val actualValue = getActualValue(context, variable)
+      actualValue.isBefore(comparableValue) || actualValue.isEqual(comparableValue)
+    }
+  }
+
   abstract class AbstractTimestampGreaterThan(variable: JsonPath, timestampGreaterThan: String) extends AbstractGreaterThan[OffsetDateTime](variable) with TimestampSupport {
     override def comparableValue: OffsetDateTime = OffsetDateTime.parse(timestampGreaterThan)
+
     override def evaluate(context: Step#Context): Boolean = {
       val actualValue = getActualValue(context, variable)
       actualValue.isAfter(comparableValue)
+    }
+  }
+
+  abstract class AbstractTimestampGreaterThanEquals(variable: JsonPath, timestampGreaterThanEquals: String) extends AbstractGreaterThanEquals[OffsetDateTime](variable) with TimestampSupport {
+    override def comparableValue: OffsetDateTime = OffsetDateTime.parse(timestampGreaterThanEquals)
+
+    override def evaluate(context: Step#Context): Boolean = {
+      val actualValue = getActualValue(context, variable)
+      actualValue.isAfter(comparableValue) || actualValue.isEqual(comparableValue)
     }
   }
 
@@ -45,13 +65,10 @@ object TimestampConditions {
 
   case class TimestampLessThan(variable: JsonPath, timestampLessThan: String) extends AbstractTimestampLessThan(variable, timestampLessThan)
 
+  case class TimestampLessThanEquals(variable: JsonPath, timestampLessThanEquals: String) extends AbstractTimestampLessThanEquals(variable, timestampLessThanEquals)
+
   case class TimestampGreaterThan(variable: JsonPath, timestampGreaterThan: String) extends AbstractTimestampGreaterThan(variable, timestampGreaterThan)
 
-
-  case class TopTimestampEquals(variable: JsonPath, timestampEquals: String, next: String) extends AbstractTimestampEquals(variable, timestampEquals) with TopLevelChoice
-
-  case class TopTimestampLessThan(variable: JsonPath, timestampLessThan: String, next: String) extends AbstractTimestampLessThan(variable, timestampLessThan) with TopLevelChoice
-
-  case class TopTimestampGreaterThan(variable: JsonPath, timestampGreaterThan: String, next: String) extends AbstractTimestampGreaterThan(variable, timestampGreaterThan) with TopLevelChoice
+  case class TimestampGreaterThanEquals(variable: JsonPath, timestampGreaterThanEquals: String) extends AbstractTimestampGreaterThanEquals(variable, timestampGreaterThanEquals)
 
 }

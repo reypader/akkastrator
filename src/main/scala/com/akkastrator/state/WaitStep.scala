@@ -3,7 +3,7 @@ package com.akkastrator.state
 import java.time.OffsetDateTime
 
 import com.akkastrator.state.common.Step.FreeStep
-import com.akkastrator.state.common.{Input, Output, Step, TerminalStep}
+import com.akkastrator.state.common.{Input, Output, Step}
 import com.fasterxml.jackson.databind.node.{IntNode, TextNode}
 import com.jayway.jsonpath.JsonPath
 
@@ -50,7 +50,6 @@ case class WaitStep(seconds: Option[Int],
 
     WaitStep.waitProvider.waitUntil(deadline).map(_ => (getNext, getOutput(context)))
   }
-
 
 
 }
