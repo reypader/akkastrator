@@ -7,11 +7,11 @@ import com.typesafe.scalalogging.LazyLogging
 
 trait Parameter extends Input with LazyLogging {
 
-  def parameter: Option[JsonNode]
+  def parameters: Option[JsonNode]
 
   override def getInput(context: Step#Context): Step#Context = {
     val effectiveInput = super.getInput(context)
-    parameter.map(p => Step.PARSER.parse(assignValues(context, effectiveInput, p))).getOrElse(effectiveInput)
+    parameters.map(p => Step.PARSER.parse(assignValues(context, effectiveInput, p))).getOrElse(effectiveInput)
   }
 
   private def assignValues[T <: JsonNode](originalContext: Step#Context, context: Step#Context, result: T): T =

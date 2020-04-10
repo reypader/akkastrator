@@ -9,7 +9,7 @@ import scala.concurrent.{ExecutionContext, Future}
 import scala.util.Try
 
 case class PassStep(result: Option[JsonNode],
-                    parameter: Option[JsonNode] = None,
+                    parameters: Option[JsonNode] = None,
                     inputPath: JsonPath = Step.CONTEXT_ROOT,
                     resultPath: JsonPath = Step.CONTEXT_ROOT,
                     outputPath: JsonPath = Step.CONTEXT_ROOT,

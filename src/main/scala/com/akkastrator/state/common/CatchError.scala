@@ -21,7 +21,7 @@ trait CatchError {
 
   case class Catcher(errorEquals: List[String], next: String, resultPath: JsonPath = Step.CONTEXT_ROOT) extends Result
 
-  def catchError: List[Catcher]
+  def errorCatch: List[Catcher]
 
   def doHandle(context: Step#Context, error: ErrorDetails, catcher: Catcher): (String, Step#Context) = {
     val errorOut = CatchError.makeNode(error.error, error.cause)
@@ -34,7 +34,7 @@ trait CatchError {
   }
 
   final def handle(context: Step#Context, error: ErrorDetails): Try[(String, Step#Context)] = Try {
-    val catcherResult: Option[Catcher] = catchError.find(catcher => {
+    val catcherResult: Option[Catcher] = errorCatch.find(catcher => {
       (catcher.errorEquals.length == 1 && catcher.errorEquals.contains(CatchError.ALL)) || catcher.errorEquals.contains(error.error)
     })
     catcherResult match {

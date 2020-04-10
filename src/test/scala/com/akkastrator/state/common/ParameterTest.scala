@@ -32,7 +32,7 @@ class ParameterTest extends AnyFlatSpec with Matchers with BeforeAndAfterEach {
 
   "Parameter=None" should "return the entire JsonNode from the context" in {
     object Fake extends Parameter {
-      override def parameter: Option[JsonNode] = None
+      override def parameters: Option[JsonNode] = None
 
       override def inputPath: JsonPath = JsonPath.compile("$")
     }
@@ -58,7 +58,7 @@ class ParameterTest extends AnyFlatSpec with Matchers with BeforeAndAfterEach {
 
   "Parameter $ reference" should "replace a field with a referenced field from the effective input $.baz" in {
     object Fake extends Parameter {
-      override def parameter: Option[JsonNode] = Some(om.readTree("""
+      override def parameters: Option[JsonNode] = Some(om.readTree("""
           {
             "herp.$" : "$.gen"
           }
@@ -80,7 +80,7 @@ class ParameterTest extends AnyFlatSpec with Matchers with BeforeAndAfterEach {
 
   it should "replace a field with a referenced field from the effective input $" in {
     object Fake extends Parameter {
-      override def parameter: Option[JsonNode] = Some(om.readTree("""
+      override def parameters: Option[JsonNode] = Some(om.readTree("""
           {
             "herp.$" : "$.baz"
           }
@@ -104,7 +104,7 @@ class ParameterTest extends AnyFlatSpec with Matchers with BeforeAndAfterEach {
 
   "Parameter with $$ reference" should "replace a field with a referenced field from the effective input $.baz and a context field $$" in {
     object Fake extends Parameter {
-      override def parameter: Option[JsonNode] = Some(om.readTree("""
+      override def parameters: Option[JsonNode] = Some(om.readTree("""
           {
             "herp.$" : "$.gen",
             "derp.$" : "$$.pow[1].tin"

@@ -1,6 +1,6 @@
 package com.akkastrator.state
 
-import com.akkastrator.state.common.{CatchError, Step}
+import com.akkastrator.state.common._
 import com.akkastrator.state.conditions.Choices._
 import com.fasterxml.jackson.databind.{JsonNode, ObjectMapper}
 import com.jayway.jsonpath.JsonPath
@@ -127,17 +127,9 @@ object States {
       (JsPath \ "Branches").read[List[StateMachine]]
     ) (ParallelState.apply _)
 
-  trait InputOutput {
-    def inputPath: JsonPath
+  trait InputOutput extends Input with Output
 
-    def outputPath: JsonPath
-  }
-
-  trait Parameters {
-    def parameters: Option[JsonNode]
-
-    def resultPath: JsonPath
-  }
+  trait Computation extends Parameter with Result
 
   trait Transition {
     def next: Option[String]
@@ -237,10 +229,8 @@ object States {
                        next: Option[String] = None,
                        parameters: Option[JsonNode] = None,
                        comment: Option[String] = None,
-
-                       result: Option[JsonNode]
-                      )
-    extends State("Pass", comment) with InputOutput with Parameters with Transition {
+                       result: Option[JsonNode])
+    extends State("Pass", comment) with InputOutput with Computation with Transition {
     if (end && next.isDefined) {
       throw new IllegalArgumentException("`next` step must not be defined if `end` is true")
     }
@@ -258,12 +248,10 @@ object States {
                        comment: Option[String] = None,
                        errorRetry: Option[ErrorRetry] = None,
                        errorCatch: Option[ErrorCatch] = None,
-
                        resource: String,
                        timeoutSeconds: Int = 60,
-                       heartBeatSeconds: Option[Int]
-                      )
-    extends State("Task", comment) with InputOutput with Parameters with Transition with ErrorHandling {
+                       heartBeatSeconds: Option[Int])
+    extends State("Task", comment) with InputOutput with Computation with Transition with ErrorHandling {
     if (resource == null || resource.isBlank) {
       throw new IllegalArgumentException("resource must not be blank")
     }
@@ -304,7 +292,6 @@ object States {
                        end: Boolean = false,
                        next: Option[String] = None,
                        comment: Option[String] = None,
-
                        seconds: Option[Int],
                        timestamp: Option[String],
                        secondsPath: Option[JsonPath],
@@ -338,9 +325,8 @@ object States {
                            comment: Option[String] = None,
                            errorRetry: Option[ErrorRetry] = None,
                            errorCatch: Option[ErrorCatch] = None,
-
                            branches: List[StateMachine])
-    extends State("Parallel", comment) with InputOutput with Parameters with Transition with ErrorHandling {
+    extends State("Parallel", comment) with InputOutput with Computation with Transition with ErrorHandling {
     if (branches == null | branches.isEmpty) {
       throw new IllegalArgumentException("branches must be specified")
     }

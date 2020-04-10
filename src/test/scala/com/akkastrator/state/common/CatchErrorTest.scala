@@ -22,7 +22,7 @@ class CatchErrorTest extends AnyFlatSpec with Matchers with BeforeAndAfterEach {
   }
 
   object Fake extends CatchError {
-    override def catchError: List[Fake.Catcher] = List(Catcher(List("A"), "nextA"),
+    override def errorCatch: List[Fake.Catcher] = List(Catcher(List("A"), "nextA"),
       Catcher(List("B"), "nextB", JsonPath.compile("$.err.errr")),
       Catcher(List("C", "D"), "nextC"),
       Catcher(List(CatchError.ALL), "nextX"))
