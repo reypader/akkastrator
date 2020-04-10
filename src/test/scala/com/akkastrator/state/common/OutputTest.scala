@@ -2,7 +2,7 @@ package com.akkastrator.state.common
 
 import java.util.UUID
 
-import com.akkastrator.state.States.TransactionContext
+import com.akkastrator.state.common.States.TransactionContext
 import com.fasterxml.jackson.databind.{JsonNode, ObjectMapper}
 import com.jayway.jsonpath.JsonPath
 import org.scalatest.flatspec.AnyFlatSpec
@@ -10,7 +10,7 @@ import org.scalatest.matchers.should.Matchers
 
 class OutputTest extends AnyFlatSpec with Matchers {
   val om = new ObjectMapper()
-  val data: TransactionContext = TransactionContext(UUID.randomUUID(), Step.PARSER.parse(
+  val data: TransactionContext = TransactionContext(UUID.randomUUID(), States.PARSER.parse(
     """
       {
         "foo": "bar",
@@ -35,7 +35,7 @@ class OutputTest extends AnyFlatSpec with Matchers {
 
     val result = Fake.getOutput(data)
 
-    result.data.read[JsonNode](Step.CONTEXT_ROOT) shouldEqual om.readTree(
+    result.data.read[JsonNode](States.CONTEXT_ROOT) shouldEqual om.readTree(
       """
       {
         "foo": "bar",
@@ -59,7 +59,7 @@ class OutputTest extends AnyFlatSpec with Matchers {
 
     val result = Fake.getOutput(data)
 
-    result.data.read[JsonNode](Step.CONTEXT_ROOT) shouldEqual om.readTree(
+    result.data.read[JsonNode](States.CONTEXT_ROOT) shouldEqual om.readTree(
       """
         {
           "gen": "bam"
@@ -74,7 +74,7 @@ class OutputTest extends AnyFlatSpec with Matchers {
 
     val result = Fake.getOutput(data)
 
-    result.data.read[JsonNode](Step.CONTEXT_ROOT) shouldEqual om.readTree(
+    result.data.read[JsonNode](States.CONTEXT_ROOT) shouldEqual om.readTree(
       """
         "tam"
       """)

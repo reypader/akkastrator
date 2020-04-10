@@ -3,16 +3,15 @@ package com.akkastrator.state.common
 import java.util.UUID
 
 import com.akkastrator.state.StateException
-import com.akkastrator.state.States.{Decision, TransactionContext}
+import com.akkastrator.state.common.States.{Decision, TransactionContext}
 import com.fasterxml.jackson.databind.{JsonNode, ObjectMapper}
 import com.jayway.jsonpath.JsonPath
-import org.scalatest.BeforeAndAfterEach
 import org.scalatest.flatspec.AnyFlatSpec
 import org.scalatest.matchers.should.Matchers
 
-class CatchErrorTest extends AnyFlatSpec with Matchers with BeforeAndAfterEach {
+class CatchErrorTest extends AnyFlatSpec with Matchers {
   val om: ObjectMapper = new ObjectMapper()
-  val data: TransactionContext = TransactionContext(UUID.randomUUID(), Step.PARSER.parse(
+  val data: TransactionContext = TransactionContext(UUID.randomUUID(), States.PARSER.parse(
     """
       {
         "foo": "bar"
@@ -32,7 +31,7 @@ class CatchErrorTest extends AnyFlatSpec with Matchers with BeforeAndAfterEach {
     val result = Fake.handle(data, StateException.StateFailure("A", "1"))
     val Decision(context) = result.get
     context.currentState shouldEqual "nextA"
-    context.data.read[JsonNode](Step.CONTEXT_ROOT) shouldEqual om.readTree(
+    context.data.read[JsonNode](States.CONTEXT_ROOT) shouldEqual om.readTree(
       """
         {
           "error" : "A",
@@ -46,7 +45,7 @@ class CatchErrorTest extends AnyFlatSpec with Matchers with BeforeAndAfterEach {
 
     val Decision(context) = result.get
     context.currentState shouldEqual "nextB"
-    context.data.read[JsonNode](Step.CONTEXT_ROOT) shouldEqual om.readTree(
+    context.data.read[JsonNode](States.CONTEXT_ROOT) shouldEqual om.readTree(
       """
          {
         "foo": "bar",
@@ -65,7 +64,7 @@ class CatchErrorTest extends AnyFlatSpec with Matchers with BeforeAndAfterEach {
     val result = Fake.handle(data, StateException.StateFailure("D", "3"))
     val Decision(context) = result.get
     context.currentState shouldEqual "nextC"
-    context.data.read[JsonNode](Step.CONTEXT_ROOT) shouldEqual om.readTree(
+    context.data.read[JsonNode](States.CONTEXT_ROOT) shouldEqual om.readTree(
       """
          {
           "error" : "D",
@@ -79,7 +78,7 @@ class CatchErrorTest extends AnyFlatSpec with Matchers with BeforeAndAfterEach {
     val result = Fake.handle(data, StateException.StateFailure("Z", "9"))
     val Decision(context) = result.get
     context.currentState shouldEqual "nextX"
-    context.data.read[JsonNode](Step.CONTEXT_ROOT) shouldEqual om.readTree(
+    context.data.read[JsonNode](States.CONTEXT_ROOT) shouldEqual om.readTree(
       """
          {
           "error" : "Z",

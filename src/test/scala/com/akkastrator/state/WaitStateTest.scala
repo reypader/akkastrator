@@ -3,17 +3,16 @@ package com.akkastrator.state
 import java.time.OffsetDateTime
 import java.util.UUID
 
-import com.akkastrator.state.States.{Action, Decision, TransactionContext}
-import com.akkastrator.state.common.Step
+import com.akkastrator.state.common.States
+import com.akkastrator.state.common.States.{Action, Decision, TransactionContext}
 import com.fasterxml.jackson.databind.{JsonNode, ObjectMapper}
 import com.jayway.jsonpath.JsonPath
-import org.scalatest.BeforeAndAfterEach
 import org.scalatest.flatspec.AsyncFlatSpec
 import org.scalatest.matchers.should.Matchers
 
-class WaitStateTest extends AsyncFlatSpec with Matchers with BeforeAndAfterEach {
+class WaitStateTest extends AsyncFlatSpec with Matchers {
   val om: ObjectMapper = new ObjectMapper()
-  val data: TransactionContext = TransactionContext(UUID.randomUUID(), Step.PARSER.parse(
+  val data: TransactionContext = TransactionContext(UUID.randomUUID(), States.PARSER.parse(
     """
       {
         "foo": "bar",
@@ -34,10 +33,10 @@ class WaitStateTest extends AsyncFlatSpec with Matchers with BeforeAndAfterEach 
     val Action(targetResource, payload) = underTest.prepare(data).get
 
     targetResource shouldEqual s"internal:wait:${anchor.plusSeconds(3).format(WaitState.TIMESTAMP_FORMAT)}:execution:${data.transactionId}"
-    payload shouldEqual data.data.read[JsonNode](Step.CONTEXT_ROOT)
+    payload shouldEqual data.data.read[JsonNode](States.CONTEXT_ROOT)
 
     val Decision(newContext) = underTest.decide(data, payload).get
-    newContext.data.read[JsonNode](Step.CONTEXT_ROOT) shouldEqual data.data.read[JsonNode](Step.CONTEXT_ROOT)
+    newContext.data.read[JsonNode](States.CONTEXT_ROOT) shouldEqual data.data.read[JsonNode](States.CONTEXT_ROOT)
     newContext.currentState shouldEqual States.END
 
   }
@@ -50,10 +49,10 @@ class WaitStateTest extends AsyncFlatSpec with Matchers with BeforeAndAfterEach 
     val Action(targetResource, payload) = underTest.prepare(data).get
 
     targetResource shouldEqual s"internal:wait:${deadline.format(WaitState.TIMESTAMP_FORMAT)}:execution:${data.transactionId}"
-    payload shouldEqual data.data.read[JsonNode](Step.CONTEXT_ROOT)
+    payload shouldEqual data.data.read[JsonNode](States.CONTEXT_ROOT)
 
     val Decision(newContext) = underTest.decide(data, payload).get
-    newContext.data.read[JsonNode](Step.CONTEXT_ROOT) shouldEqual data.data.read[JsonNode](Step.CONTEXT_ROOT)
+    newContext.data.read[JsonNode](States.CONTEXT_ROOT) shouldEqual data.data.read[JsonNode](States.CONTEXT_ROOT)
     newContext.currentState shouldEqual "DERP"
   }
 
@@ -64,10 +63,10 @@ class WaitStateTest extends AsyncFlatSpec with Matchers with BeforeAndAfterEach 
     val Action(targetResource, payload) = underTest.prepare(data).get
 
     targetResource shouldEqual s"internal:wait:${anchor.plusSeconds(6).format(WaitState.TIMESTAMP_FORMAT)}:execution:${data.transactionId}"
-    payload shouldEqual data.data.read[JsonNode](Step.CONTEXT_ROOT)
+    payload shouldEqual data.data.read[JsonNode](States.CONTEXT_ROOT)
 
     val Decision(newContext) = underTest.decide(data, payload).get
-    newContext.data.read[JsonNode](Step.CONTEXT_ROOT) shouldEqual data.data.read[JsonNode](Step.CONTEXT_ROOT)
+    newContext.data.read[JsonNode](States.CONTEXT_ROOT) shouldEqual data.data.read[JsonNode](States.CONTEXT_ROOT)
     newContext.currentState shouldEqual States.END
   }
 
@@ -79,10 +78,10 @@ class WaitStateTest extends AsyncFlatSpec with Matchers with BeforeAndAfterEach 
     val Action(targetResource, payload) = underTest.prepare(data).get
 
     targetResource shouldEqual s"internal:wait:${deadline.format(WaitState.TIMESTAMP_FORMAT)}:execution:${data.transactionId}"
-    payload shouldEqual data.data.read[JsonNode](Step.CONTEXT_ROOT)
+    payload shouldEqual data.data.read[JsonNode](States.CONTEXT_ROOT)
 
     val Decision(newContext) = underTest.decide(data, payload).get
-    newContext.data.read[JsonNode](Step.CONTEXT_ROOT) shouldEqual om.readTree(
+    newContext.data.read[JsonNode](States.CONTEXT_ROOT) shouldEqual om.readTree(
       """
           {
           "a" : "b"

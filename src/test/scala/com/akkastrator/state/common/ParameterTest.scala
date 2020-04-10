@@ -2,7 +2,7 @@ package com.akkastrator.state.common
 
 import java.util.UUID
 
-import com.akkastrator.state.States.TransactionContext
+import com.akkastrator.state.common.States.TransactionContext
 import com.fasterxml.jackson.databind.{JsonNode, ObjectMapper}
 import com.jayway.jsonpath.JsonPath
 import org.scalatest.flatspec.AnyFlatSpec
@@ -10,7 +10,7 @@ import org.scalatest.matchers.should.Matchers
 
 class ParameterTest extends AnyFlatSpec with Matchers {
   val om: ObjectMapper = new ObjectMapper()
-  val data: TransactionContext = TransactionContext(UUID.randomUUID(), Step.PARSER.parse(
+  val data: TransactionContext = TransactionContext(UUID.randomUUID(), States.PARSER.parse(
     """
       {
         "foo": "bar",

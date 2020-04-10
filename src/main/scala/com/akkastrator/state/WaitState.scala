@@ -4,8 +4,8 @@ import java.time.OffsetDateTime
 import java.time.format.{DateTimeFormatter, DateTimeFormatterBuilder, SignStyle}
 import java.time.temporal.ChronoField._
 
-import com.akkastrator.state.States.{Action, Decision, InputOutput, State, TransactionContext, Transition}
-import com.akkastrator.state.common.Step
+import com.akkastrator.state.common.States
+import com.akkastrator.state.common.States.{Action, Decision, InputOutput, State, TransactionContext, Transition}
 import com.fasterxml.jackson.databind.JsonNode
 import com.fasterxml.jackson.databind.node.{IntNode, TextNode}
 import com.jayway.jsonpath.JsonPath
@@ -48,8 +48,8 @@ object WaitState {
 }
 
 
-case class WaitState(inputPath: JsonPath = Step.CONTEXT_ROOT,
-                     outputPath: JsonPath = Step.CONTEXT_ROOT,
+case class WaitState(inputPath: JsonPath = States.CONTEXT_ROOT,
+                     outputPath: JsonPath = States.CONTEXT_ROOT,
                      end: Boolean = false,
                      next: Option[String] = None,
                      comment: Option[String] = None,
@@ -75,11 +75,11 @@ case class WaitState(inputPath: JsonPath = Step.CONTEXT_ROOT,
       case (None, Some(deadline), None, None) =>
         OffsetDateTime.parse(deadline)
       case (None, None, Some(durationPath), None) =>
-        val effectiveInput = Step.PARSER.parse(getInput(context))
+        val effectiveInput = States.PARSER.parse(getInput(context))
         val duration = effectiveInput.read[IntNode](durationPath)
         OffsetDateTime.now().plusSeconds(duration.intValue())
       case (None, None, None, Some(deadlinePath)) =>
-        val effectiveInput = Step.PARSER.parse(getInput(context))
+        val effectiveInput = States.PARSER.parse(getInput(context))
         val deadline = effectiveInput.read[TextNode](deadlinePath)
         OffsetDateTime.parse(deadline.textValue())
       case _ => throw new IllegalArgumentException("There must be exactly one provided among seconds, timestamp, secondsPath, and timestampPath")

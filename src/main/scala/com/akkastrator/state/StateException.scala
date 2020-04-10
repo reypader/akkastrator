@@ -1,6 +1,7 @@
 package com.akkastrator.state
 
-import com.akkastrator.state.States.{Context, TransactionContext}
+import com.akkastrator.state.common.States
+import com.akkastrator.state.common.States.{Context, TransactionContext}
 import com.jayway.jsonpath.JsonPath
 
 object StateException {

@@ -1,7 +1,7 @@
 package com.akkastrator.state
 
-import com.akkastrator.state.States.{Action, Computation, Decision, ErrorHandling, InputOutput, State, TransactionContext, Transition}
-import com.akkastrator.state.common.Step
+import com.akkastrator.state.common.States
+import com.akkastrator.state.common.States.{Action, Computation, Decision, ErrorHandling, InputOutput, State, TransactionContext, Transition}
 import com.fasterxml.jackson.databind.JsonNode
 import com.jayway.jsonpath.JsonPath
 import play.api.libs.functional.syntax._
@@ -27,9 +27,9 @@ object ParallelState {
     ) (ParallelState.apply _)
 }
 
-case class ParallelState(inputPath: JsonPath = Step.CONTEXT_ROOT,
-                         resultPath: JsonPath = Step.CONTEXT_ROOT,
-                         outputPath: JsonPath = Step.CONTEXT_ROOT,
+case class ParallelState(inputPath: JsonPath = States.CONTEXT_ROOT,
+                         resultPath: JsonPath = States.CONTEXT_ROOT,
+                         outputPath: JsonPath = States.CONTEXT_ROOT,
                          end: Boolean = false,
                          next: Option[String] = None,
                          parameters: Option[JsonNode] = None,

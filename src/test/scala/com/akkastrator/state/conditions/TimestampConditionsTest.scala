@@ -1,26 +1,22 @@
 package com.akkastrator.state.conditions
 
-import com.akkastrator.state.common.Step
+import com.akkastrator.state.common.States
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.jayway.jsonpath.{DocumentContext, JsonPath}
-import org.scalatest.BeforeAndAfterEach
 import org.scalatest.flatspec.AnyFlatSpec
 import org.scalatest.matchers.should.Matchers
 
-class TimestampConditionsTest extends AnyFlatSpec with Matchers with BeforeAndAfterEach {
+class TimestampConditionsTest extends AnyFlatSpec with Matchers {
   val om: ObjectMapper = new ObjectMapper()
-  var data: DocumentContext = _
-
-  override def beforeEach(): Unit = {
-    data = Step.PARSER.parse(
-      """
+  var data: DocumentContext = States.PARSER.parse(
+    """
                 {
                   "foo": "2012-12-31T23:59:59+08:00",
                   "bar": "2012-12-31T15:59:59Z"
                 }
                 """
-    )
-  }
+  )
+
 
   "TimestampEquals" should "evaluate to false if not equal" in {
     val underTest1 = TimestampConditions.TimestampEquals(JsonPath.compile("$.foo"), "2012-12-31T23:59:58+08:00")

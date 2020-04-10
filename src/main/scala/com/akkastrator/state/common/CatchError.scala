@@ -2,7 +2,7 @@ package com.akkastrator.state.common
 
 import com.akkastrator.state.StateException
 import com.akkastrator.state.StateException.ErrorDetails
-import com.akkastrator.state.States.{Decision, TransactionContext}
+import com.akkastrator.state.common.States.{Decision, TransactionContext}
 import com.fasterxml.jackson.databind.{JsonNode, ObjectMapper}
 import com.jayway.jsonpath.JsonPath
 
@@ -34,8 +34,8 @@ trait CatchError {
 
   def doHandle(context: TransactionContext, error: ErrorDetails, catcher: Catcher): Decision = {
     val errorOut = CatchError.makeNode(error.error, error.cause)
-    val out = if (catcher.resultPath == Step.CONTEXT_ROOT) {
-      context.copy(data = Step.PARSER.parse(errorOut), currentState = catcher.next)
+    val out = if (catcher.resultPath == States.CONTEXT_ROOT) {
+      context.copy(data = States.PARSER.parse(errorOut), currentState = catcher.next)
     } else {
       catcher.writeResult(context, errorOut) copy (currentState = catcher.next)
 
@@ -43,6 +43,6 @@ trait CatchError {
     Decision(out)
   }
 
-  case class Catcher(errorEquals: List[String], next: String, resultPath: JsonPath = Step.CONTEXT_ROOT) extends Result
+  case class Catcher(errorEquals: List[String], next: String, resultPath: JsonPath = States.CONTEXT_ROOT) extends Result
 
 }

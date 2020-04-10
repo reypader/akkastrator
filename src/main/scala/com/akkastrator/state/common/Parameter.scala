@@ -1,7 +1,6 @@
 package com.akkastrator.state.common
 
-import com.akkastrator.state.States
-import com.akkastrator.state.States.TransactionContext
+import com.akkastrator.state.common.States.TransactionContext
 import com.fasterxml.jackson.databind.JsonNode
 import com.fasterxml.jackson.databind.node.{ArrayNode, ObjectNode, ValueNode}
 import com.jayway.jsonpath.JsonPath
@@ -13,7 +12,7 @@ trait Parameter extends Input with LazyLogging {
 
   override def getInput(context: TransactionContext): JsonNode = {
     val effectiveInput = super.getInput(context)
-    parameters.map(p => assignValues(context, Step.PARSER.parse(effectiveInput), p)).getOrElse(effectiveInput)
+    parameters.map(p => assignValues(context, States.PARSER.parse(effectiveInput), p)).getOrElse(effectiveInput)
   }
 
   private def assignValues[T <: JsonNode](originalContext: TransactionContext, context: States.Context, result: T): JsonNode =

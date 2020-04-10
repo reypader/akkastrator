@@ -1,8 +1,8 @@
 package com.akkastrator.state
 
 import com.akkastrator.state.ChoiceState.TopLevelChoice
-import com.akkastrator.state.States.{Action, Decision, InputOutput, State, TransactionContext}
-import com.akkastrator.state.common.Step
+import com.akkastrator.state.common.States
+import com.akkastrator.state.common.States.{Action, Decision, InputOutput, State, TransactionContext}
 import com.akkastrator.state.conditions.BooleanConditions.booleanEqualsReads
 import com.akkastrator.state.conditions.LogicalConditions.{andRead, notRead, orRead}
 import com.akkastrator.state.conditions.NumericConditions.{numericEqualsReads, numericGreaterThanEqualsReads, numericGreaterThanReads, numericLessThanEqualsReads, numericLessThanReads}
@@ -86,8 +86,8 @@ object ChoiceState {
 }
 
 
-case class ChoiceState(inputPath: JsonPath = Step.CONTEXT_ROOT,
-                       outputPath: JsonPath = Step.CONTEXT_ROOT,
+case class ChoiceState(inputPath: JsonPath = States.CONTEXT_ROOT,
+                       outputPath: JsonPath = States.CONTEXT_ROOT,
                        comment: Option[String] = None,
                        choices: List[TopLevelChoice],
                        default: Option[String])
@@ -107,7 +107,7 @@ case class ChoiceState(inputPath: JsonPath = Step.CONTEXT_ROOT,
   }
 
   override def decide(context: TransactionContext, data: JsonNode): Try[Decision] = Try {
-    val result = choices.find(rule => rule.evaluate(Step.PARSER.parse(data))).map(rule => rule.next)
+    val result = choices.find(rule => rule.evaluate(States.PARSER.parse(data))).map(rule => rule.next)
     if (result.isEmpty && default.isEmpty) {
       throw StateException.UnresolvableChoiceException(this, context)
     } else {

@@ -1,7 +1,7 @@
 package com.akkastrator.state.conditions
 
 import com.akkastrator.state.ChoiceState.{Comparison, VariableAccess}
-import com.akkastrator.state.States
+import com.akkastrator.state.common.States
 import com.akkastrator.state.conditions.LogicalConditions._
 import com.fasterxml.jackson.databind.node.TextNode
 import com.jayway.jsonpath.JsonPath

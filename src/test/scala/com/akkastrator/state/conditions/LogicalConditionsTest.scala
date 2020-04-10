@@ -1,17 +1,16 @@
 package com.akkastrator.state.conditions
 
 import com.akkastrator.state.ChoiceState.ChoiceRule
-import com.akkastrator.state.common.Step
+import com.akkastrator.state.common.States
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.jayway.jsonpath.DocumentContext
 import org.mockito.Mockito._
-import org.scalatest.BeforeAndAfterEach
 import org.scalatest.flatspec.AnyFlatSpec
 import org.scalatest.matchers.should.Matchers
 
-class LogicalConditionsTest extends AnyFlatSpec with Matchers with BeforeAndAfterEach {
+class LogicalConditionsTest extends AnyFlatSpec with Matchers {
   val om: ObjectMapper = new ObjectMapper()
-  val data: DocumentContext = Step.PARSER.parse(
+  val data: DocumentContext = States.PARSER.parse(
     """
                 {
                   "foo": "bar"

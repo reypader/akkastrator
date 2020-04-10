@@ -3,8 +3,8 @@ package com.akkastrator.state
 import java.util.UUID
 
 import com.akkastrator.state.ChoiceState.TopLevelChoice
-import com.akkastrator.state.States.{Decision, TransactionContext}
-import com.akkastrator.state.common.Step
+import com.akkastrator.state.common.States
+import com.akkastrator.state.common.States.{Decision, TransactionContext}
 import com.akkastrator.state.conditions.{LogicalConditions, StringConditions}
 import com.fasterxml.jackson.databind.{JsonNode, ObjectMapper}
 import com.jayway.jsonpath.JsonPath
@@ -13,7 +13,7 @@ import org.scalatest.matchers.should.Matchers
 
 class ChoiceStateTest extends AnyFlatSpec with Matchers {
   val om: ObjectMapper = new ObjectMapper()
-  val data: TransactionContext = TransactionContext(UUID.randomUUID(), Step.PARSER.parse(
+  val data: TransactionContext = TransactionContext(UUID.randomUUID(), States.PARSER.parse(
     """
                 {
                   "foo": "bar",

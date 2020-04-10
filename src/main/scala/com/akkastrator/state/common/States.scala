@@ -1,23 +1,36 @@
-package com.akkastrator.state
+package com.akkastrator.state.common
 
 import java.util.UUID
 
-import com.akkastrator.state.common._
+import com.akkastrator.state.{ErrorCatch, ErrorRetry}
 import com.fasterxml.jackson.databind.{JsonNode, ObjectMapper}
-import com.jayway.jsonpath.DocumentContext
+import com.jayway.jsonpath.spi.json.JacksonJsonNodeJsonProvider
+import com.jayway.jsonpath.spi.mapper.JacksonMappingProvider
+import com.jayway.jsonpath.{Configuration, DocumentContext, JsonPath, ParseContext}
 import play.api.libs.json.{Reads, _}
 
 import scala.util.Try
+import scala.util.matching.Regex
 
 object States {
   type Context = DocumentContext
+  val PATH_PATTERN: Regex = "(^\\$.*)\\['([a-zA-Z0-9_-]+)'\\]".r
+  val CONTEXT_ROOT: JsonPath = JsonPath.compile("$")
+  val PARSER: ParseContext = JsonPath.using(
+    Configuration
+      .builder()
+      .mappingProvider(new JacksonMappingProvider())
+      .jsonProvider(new JacksonJsonNodeJsonProvider())
+      .build())
   val END: String = "__END__"
+  val om = new ObjectMapper()
   implicit val stringListRead: Reads[List[String]] = Reads.list[String]
 
   implicit val jsonNodeRead: Reads[JsonNode] = (m: JsValue) => Try {
     om.readTree(m.toString())
   }.map(JsSuccess(_)).recover(ex => JsError(ex.getMessage)).get
-  val om = new ObjectMapper()
+
+  def emptyNode: JsonNode = PARSER.parse("{}").read(CONTEXT_ROOT)
 
   trait InputOutput extends Input with Output
 

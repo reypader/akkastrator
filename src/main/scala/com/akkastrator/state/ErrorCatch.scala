@@ -1,7 +1,7 @@
 package com.akkastrator.state
 
-import com.akkastrator.state.States.stringListRead
-import com.akkastrator.state.common.{CatchError, Step}
+import com.akkastrator.state.common.States.stringListRead
+import com.akkastrator.state.common.{CatchError, States}
 import com.jayway.jsonpath.JsonPath
 import play.api.libs.functional.syntax._
 import play.api.libs.json.Reads._
@@ -17,7 +17,7 @@ object ErrorCatch {
 
 case class ErrorCatch(errorEquals: List[String],
                       next: String,
-                      resultPath: JsonPath = Step.CONTEXT_ROOT) {
+                      resultPath: JsonPath = States.CONTEXT_ROOT) {
   if (errorEquals == null || errorEquals.isEmpty) {
     throw new IllegalArgumentException("errorEquals must be specified")
   }

@@ -1,26 +1,21 @@
 package com.akkastrator.state.conditions
 
-import com.akkastrator.state.common.Step
+import com.akkastrator.state.common.States
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.jayway.jsonpath.{DocumentContext, JsonPath}
-import org.scalatest.BeforeAndAfterEach
 import org.scalatest.flatspec.AnyFlatSpec
 import org.scalatest.matchers.should.Matchers
 
-class NumericConditionsTest extends AnyFlatSpec with Matchers with BeforeAndAfterEach {
+class NumericConditionsTest extends AnyFlatSpec with Matchers {
   val om: ObjectMapper = new ObjectMapper()
-  var data: DocumentContext = _
-
-  override def beforeEach(): Unit = {
-    data = Step.PARSER.parse(
-      """
+  var data: DocumentContext = States.PARSER.parse(
+    """
                 {
                   "foo": 1.23,
                   "bar": 5
                 }
                 """
-    )
-  }
+  )
 
   "NumericEquals" should "evaluate to false if not equal" in {
     val underTest1 = NumericConditions.NumericEquals(JsonPath.compile("$.foo"), BigDecimal("1.24"))

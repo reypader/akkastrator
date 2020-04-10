@@ -4,10 +4,10 @@ import com.akkastrator.state.ChoiceState.choiceStateRead
 import com.akkastrator.state.FailState.failStateRead
 import com.akkastrator.state.ParallelState.parallelStateRead
 import com.akkastrator.state.PassState.passStateRead
-import com.akkastrator.state.States.State
 import com.akkastrator.state.SucceedState.succeedStateRead
 import com.akkastrator.state.TaskState.taskStateRead
 import com.akkastrator.state.WaitState.waitStateRead
+import com.akkastrator.state.common.States.State
 import com.typesafe.scalalogging.LazyLogging
 import play.api.libs.functional.syntax._
 import play.api.libs.json.Reads._

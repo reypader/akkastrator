@@ -1,7 +1,7 @@
 package com.akkastrator.state
 
-import com.akkastrator.state.States.{Action, Decision, InputOutput, State, TransactionContext}
-import com.akkastrator.state.common.Step
+import com.akkastrator.state.common.States
+import com.akkastrator.state.common.States.{Action, Decision, InputOutput, State, TransactionContext}
 import com.fasterxml.jackson.databind.JsonNode
 import com.jayway.jsonpath.JsonPath
 import play.api.libs.functional.syntax._
@@ -18,8 +18,8 @@ object SucceedState {
     ) (SucceedState.apply _)
 }
 
-case class SucceedState(inputPath: JsonPath = Step.CONTEXT_ROOT,
-                        outputPath: JsonPath = Step.CONTEXT_ROOT,
+case class SucceedState(inputPath: JsonPath = States.CONTEXT_ROOT,
+                        outputPath: JsonPath = States.CONTEXT_ROOT,
                         comment: Option[String] = None)
   extends State("Succeed", comment) with InputOutput {
   override def prepare(context: TransactionContext): Try[Action] = Try {
