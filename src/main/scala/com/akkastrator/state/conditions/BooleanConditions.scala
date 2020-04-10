@@ -1,7 +1,7 @@
 package com.akkastrator.state.conditions
 
-import com.akkastrator.state.ChoiceState.{Comparison, TopLevelChoice, VariableAccess}
-import com.akkastrator.state.common.State.State
+import com.akkastrator.state.ChoiceStep.{Comparison, TopLevelChoice, VariableAccess}
+import com.akkastrator.state.common.Step.Step
 import com.akkastrator.state.conditions.LogicalConditions.AbstractEqual
 import com.fasterxml.jackson.databind.node.BooleanNode
 import com.jayway.jsonpath.JsonPath
@@ -9,7 +9,7 @@ import com.jayway.jsonpath.JsonPath
 object BooleanConditions {
 
   trait BooleanSupport extends Comparison[Boolean] with VariableAccess[Boolean] {
-    override def getActualValue(context: State#Context, variable: JsonPath): Boolean = {
+    override def getActualValue(context: Step#Context, variable: JsonPath): Boolean = {
       context.read(variable).asInstanceOf[BooleanNode].booleanValue()
     }
   }

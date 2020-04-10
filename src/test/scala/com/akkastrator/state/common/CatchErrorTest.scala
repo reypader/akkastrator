@@ -12,7 +12,7 @@ class CatchErrorTest extends AnyFlatSpec with Matchers with BeforeAndAfterEach {
   var data: DocumentContext = _
 
   override def beforeEach(): Unit = {
-    data = State.PARSER.parse(
+    data = Step.PARSER.parse(
       """
       {
         "foo": "bar"
@@ -32,7 +32,7 @@ class CatchErrorTest extends AnyFlatSpec with Matchers with BeforeAndAfterEach {
   "Catch" should "return next normally if no resultPath is provided" in {
     val result = Fake.handle(data, StateException.StateFailure("A", "1"))
     val (next, context) = result.get
-    (next, context.read(State.CONTEXT_ROOT).asInstanceOf[JsonNode]) shouldEqual("nextA", om.readTree(
+    (next, context.read(Step.CONTEXT_ROOT).asInstanceOf[JsonNode]) shouldEqual("nextA", om.readTree(
       """
         {
           "error" : "A",
@@ -45,7 +45,7 @@ class CatchErrorTest extends AnyFlatSpec with Matchers with BeforeAndAfterEach {
     val result = Fake.handle(data, StateException.StateFailure("B", "2"))
 
     val (next, context) = result.get
-    (next, context.read(State.CONTEXT_ROOT).asInstanceOf[JsonNode]) shouldEqual("nextB", om.readTree(
+    (next, context.read(Step.CONTEXT_ROOT).asInstanceOf[JsonNode]) shouldEqual("nextB", om.readTree(
       """
          {
         "foo": "bar",
@@ -64,7 +64,7 @@ class CatchErrorTest extends AnyFlatSpec with Matchers with BeforeAndAfterEach {
     val result = Fake.handle(data, StateException.StateFailure("D", "3"))
 
     val (next, context) = result.get
-    (next, context.read(State.CONTEXT_ROOT).asInstanceOf[JsonNode]) shouldEqual("nextC", om.readTree(
+    (next, context.read(Step.CONTEXT_ROOT).asInstanceOf[JsonNode]) shouldEqual("nextC", om.readTree(
       """
         {
           "error" : "D",
@@ -78,7 +78,7 @@ class CatchErrorTest extends AnyFlatSpec with Matchers with BeforeAndAfterEach {
     val result = Fake.handle(data, StateException.StateFailure("Z", "9"))
 
     val (next, context) = result.get
-    (next, context.read(State.CONTEXT_ROOT).asInstanceOf[JsonNode]) shouldEqual("nextX", om.readTree(
+    (next, context.read(Step.CONTEXT_ROOT).asInstanceOf[JsonNode]) shouldEqual("nextX", om.readTree(
       """
         {
           "error" : "Z",

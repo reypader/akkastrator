@@ -1,17 +1,17 @@
 package com.akkastrator.state
 
-import com.akkastrator.state.ChoiceState.TopLevelChoice
-import com.akkastrator.state.common.State.State
-import com.akkastrator.state.common.{Input, NextStep, Output, State}
+import com.akkastrator.state.ChoiceStep.TopLevelChoice
+import com.akkastrator.state.common.Step.Step
+import com.akkastrator.state.common.{Input, NextStep, Output, Step}
 import com.jayway.jsonpath.JsonPath
 
 import scala.concurrent.{ExecutionContext, Future}
 import scala.util.Try
 
-object ChoiceState {
+object ChoiceStep {
 
   trait ChoiceRule {
-    def evaluate(context: State#Context): Boolean
+    def evaluate(context: Step#Context): Boolean
   }
 
   trait Comparison[T] {
@@ -19,7 +19,7 @@ object ChoiceState {
   }
 
   trait VariableAccess[T] {
-    def getActualValue(context: State#Context, variable: JsonPath): T
+    def getActualValue(context: Step#Context, variable: JsonPath): T
   }
 
   trait TopLevelChoice extends ChoiceRule with NextStep
@@ -28,11 +28,11 @@ object ChoiceState {
 }
 
 
-case class ChoiceState(choices: List[TopLevelChoice],
-                       default: Option[String],
-                       inputPath: JsonPath = State.CONTEXT_ROOT,
-                       outputPath: JsonPath = State.CONTEXT_ROOT)
-  extends State("Choice") with Input with Output {
+case class ChoiceStep(choices: List[TopLevelChoice],
+                      default: Option[String],
+                      inputPath: JsonPath = Step.CONTEXT_ROOT,
+                      outputPath: JsonPath = Step.CONTEXT_ROOT)
+  extends Step("Choice") with Input with Output {
 
   if (choices.length < 1) {
     throw new IllegalArgumentException("Must have at least one choice")

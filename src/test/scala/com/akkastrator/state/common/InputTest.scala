@@ -11,7 +11,7 @@ class InputTest extends AnyFlatSpec with Matchers with BeforeAndAfterEach {
   var data: DocumentContext = _
 
   override def beforeEach(): Unit = {
-    data = State.PARSER.parse(
+    data = Step.PARSER.parse(
       """
       {
         "foo": "bar",
@@ -37,7 +37,7 @@ class InputTest extends AnyFlatSpec with Matchers with BeforeAndAfterEach {
 
     val result = Fake.getInput(data)
 
-    result.read(State.CONTEXT_ROOT).asInstanceOf[JsonNode] shouldEqual om.readTree("""
+    result.read(Step.CONTEXT_ROOT).asInstanceOf[JsonNode] shouldEqual om.readTree("""
       {
         "foo": "bar",
         "baz" : {
@@ -60,7 +60,7 @@ class InputTest extends AnyFlatSpec with Matchers with BeforeAndAfterEach {
 
     val result = Fake.getInput(data)
 
-    result.read(State.CONTEXT_ROOT).asInstanceOf[JsonNode] shouldEqual om.readTree("""
+    result.read(Step.CONTEXT_ROOT).asInstanceOf[JsonNode] shouldEqual om.readTree("""
         {
           "gen": "bam"
         }
@@ -74,7 +74,7 @@ class InputTest extends AnyFlatSpec with Matchers with BeforeAndAfterEach {
 
     val result = Fake.getInput(data)
 
-    result.read(State.CONTEXT_ROOT).asInstanceOf[JsonNode] shouldEqual om.readTree("""
+    result.read(Step.CONTEXT_ROOT).asInstanceOf[JsonNode] shouldEqual om.readTree("""
         "tam"
       """)
   }

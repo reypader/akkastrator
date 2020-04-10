@@ -1,6 +1,6 @@
 package com.akkastrator.state.conditions
 
-import com.akkastrator.state.common.State
+import com.akkastrator.state.common.Step
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.databind.node.NumericNode
 import com.jayway.jsonpath.{DocumentContext, JsonPath}
@@ -13,7 +13,7 @@ class NumericConditionsTest extends AnyFlatSpec with Matchers with BeforeAndAfte
   var data: DocumentContext = _
 
   override def beforeEach(): Unit = {
-    data = State.PARSER.parse(
+    data = Step.PARSER.parse(
       """
                 {
                   "foo": 1.23,

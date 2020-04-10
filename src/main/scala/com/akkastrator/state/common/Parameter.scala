@@ -1,6 +1,6 @@
 package com.akkastrator.state.common
 
-import com.akkastrator.state.common.State.State
+import com.akkastrator.state.common.Step.Step
 import com.fasterxml.jackson.databind.JsonNode
 import com.fasterxml.jackson.databind.node.{ArrayNode, ObjectNode, ValueNode}
 import com.jayway.jsonpath.JsonPath
@@ -10,12 +10,12 @@ trait Parameter extends Input with LazyLogging {
 
   def parameter: Option[JsonNode]
 
-  override def getInput(context: State#Context): State#Context = {
+  override def getInput(context: Step#Context): Step#Context = {
     val effectiveInput = super.getInput(context)
-    parameter.map(p => State.PARSER.parse(assignValues(context, effectiveInput, p))).getOrElse(effectiveInput)
+    parameter.map(p => Step.PARSER.parse(assignValues(context, effectiveInput, p))).getOrElse(effectiveInput)
   }
 
-  private def assignValues[T <: JsonNode](originalContext: State#Context, context: State#Context, result: T): T =
+  private def assignValues[T <: JsonNode](originalContext: Step#Context, context: Step#Context, result: T): T =
     result match {
       case value: ObjectNode =>
         var copy = value.deepCopy()

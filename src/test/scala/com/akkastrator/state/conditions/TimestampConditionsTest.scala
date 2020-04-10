@@ -1,6 +1,6 @@
 package com.akkastrator.state.conditions
 
-import com.akkastrator.state.common.State
+import com.akkastrator.state.common.Step
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.databind.node.TextNode
 import com.jayway.jsonpath.{DocumentContext, JsonPath}
@@ -13,7 +13,7 @@ class TimestampConditionsTest extends AnyFlatSpec with Matchers with BeforeAndAf
   var data: DocumentContext = _
 
   override def beforeEach(): Unit = {
-    data = State.PARSER.parse(
+    data = Step.PARSER.parse(
       """
                 {
                   "foo": "2012-12-31T23:59:59+08:00",

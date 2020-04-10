@@ -11,7 +11,7 @@ class ResultTest extends AnyFlatSpec with Matchers with BeforeAndAfterEach {
   var data: DocumentContext = _
 
   override def beforeEach(): Unit = {
-    data = State.PARSER.parse(
+    data = Step.PARSER.parse(
       """
       {
         "foo": "bar",
@@ -41,12 +41,12 @@ class ResultTest extends AnyFlatSpec with Matchers with BeforeAndAfterEach {
         }
         """))
 
-    result.read[JsonNode](State.CONTEXT_ROOT) shouldEqual State.PARSER.parse(
+    result.read[JsonNode](Step.CONTEXT_ROOT) shouldEqual Step.PARSER.parse(
       """
         {
           "gen": "bam"
         }
-      """).read[JsonNode](State.CONTEXT_ROOT)
+      """).read[JsonNode](Step.CONTEXT_ROOT)
   }
 
   "Result=$._" should "replace a field from the context" in {
@@ -58,7 +58,7 @@ class ResultTest extends AnyFlatSpec with Matchers with BeforeAndAfterEach {
           "derp"
         """))
 
-    result.read[JsonNode](State.CONTEXT_ROOT) shouldEqual State.PARSER.parse(
+    result.read[JsonNode](Step.CONTEXT_ROOT) shouldEqual Step.PARSER.parse(
       """
         {
         "foo": "bar",
@@ -70,7 +70,7 @@ class ResultTest extends AnyFlatSpec with Matchers with BeforeAndAfterEach {
         }
         ]
       }
-      """).read[JsonNode](State.CONTEXT_ROOT)
+      """).read[JsonNode](Step.CONTEXT_ROOT)
   }
 
   it should "return a Context of a field from the context no matter how deeply nested" in {
@@ -84,7 +84,7 @@ class ResultTest extends AnyFlatSpec with Matchers with BeforeAndAfterEach {
           }
         """))
 
-    result.read[JsonNode](State.CONTEXT_ROOT) shouldEqual State.PARSER.parse(
+    result.read[JsonNode](Step.CONTEXT_ROOT) shouldEqual Step.PARSER.parse(
       """
         {
         "foo": "bar",
@@ -100,7 +100,7 @@ class ResultTest extends AnyFlatSpec with Matchers with BeforeAndAfterEach {
         }
         ]
       }
-      """).read[JsonNode](State.CONTEXT_ROOT)
+      """).read[JsonNode](Step.CONTEXT_ROOT)
   }
 
 }

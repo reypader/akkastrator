@@ -1,8 +1,8 @@
 package com.akkastrator.state.conditions
 
-import com.akkastrator.state.ChoiceState.{Comparison, TopLevelChoice, VariableAccess}
-import com.akkastrator.state.common.State
-import com.akkastrator.state.common.State.State
+import com.akkastrator.state.ChoiceStep.{Comparison, TopLevelChoice, VariableAccess}
+import com.akkastrator.state.common.Step
+import com.akkastrator.state.common.Step.Step
 import com.akkastrator.state.conditions.LogicalConditions.{AbstractEqual, AbstractGreaterThan, AbstractLessThan}
 import com.fasterxml.jackson.databind.node.TextNode
 import com.jayway.jsonpath.JsonPath
@@ -10,7 +10,7 @@ import com.jayway.jsonpath.JsonPath
 object StringConditions {
 
   trait StringSupport extends Comparison[String] with VariableAccess[String] {
-    override def getActualValue(context: State#Context, variable: JsonPath): String = {
+    override def getActualValue(context: Step#Context, variable: JsonPath): String = {
       context.read(variable).asInstanceOf[TextNode].textValue()
     }
   }

@@ -11,7 +11,7 @@ class ParameterTest extends AnyFlatSpec with Matchers with BeforeAndAfterEach {
   var data: DocumentContext = _
 
   override def beforeEach(): Unit = {
-    data = State.PARSER.parse(
+    data = Step.PARSER.parse(
       """
       {
         "foo": "bar",
@@ -39,7 +39,7 @@ class ParameterTest extends AnyFlatSpec with Matchers with BeforeAndAfterEach {
 
     val result = Fake.getInput(data)
 
-    result.read(State.CONTEXT_ROOT).asInstanceOf[JsonNode] shouldEqual om.readTree(
+    result.read(Step.CONTEXT_ROOT).asInstanceOf[JsonNode] shouldEqual om.readTree(
       """
       {
         "foo": "bar",
@@ -69,7 +69,7 @@ class ParameterTest extends AnyFlatSpec with Matchers with BeforeAndAfterEach {
 
     val result = Fake.getInput(data)
 
-    result.read(State.CONTEXT_ROOT).asInstanceOf[JsonNode] shouldEqual om.readTree(
+    result.read(Step.CONTEXT_ROOT).asInstanceOf[JsonNode] shouldEqual om.readTree(
       """
          {
             "herp" : "bam"
@@ -91,7 +91,7 @@ class ParameterTest extends AnyFlatSpec with Matchers with BeforeAndAfterEach {
 
     val result = Fake.getInput(data)
 
-    result.read(State.CONTEXT_ROOT).asInstanceOf[JsonNode] shouldEqual om.readTree(
+    result.read(Step.CONTEXT_ROOT).asInstanceOf[JsonNode] shouldEqual om.readTree(
       """
          {
             "herp" : {
@@ -116,7 +116,7 @@ class ParameterTest extends AnyFlatSpec with Matchers with BeforeAndAfterEach {
 
     val result = Fake.getInput(data)
 
-    result.read(State.CONTEXT_ROOT).asInstanceOf[JsonNode] shouldEqual om.readTree(
+    result.read(Step.CONTEXT_ROOT).asInstanceOf[JsonNode] shouldEqual om.readTree(
       """
          {
             "herp" : "bam",

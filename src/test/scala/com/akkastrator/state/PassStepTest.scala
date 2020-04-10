@@ -1,6 +1,6 @@
 package com.akkastrator.state
 
-import com.akkastrator.state.common.State
+import com.akkastrator.state.common.Step
 import com.fasterxml.jackson.databind.node.{ArrayNode, ObjectNode}
 import com.fasterxml.jackson.databind.{JsonNode, ObjectMapper}
 import com.jayway.jsonpath.{DocumentContext, JsonPath}
@@ -8,12 +8,12 @@ import org.scalatest.BeforeAndAfterEach
 import org.scalatest.flatspec.AsyncFlatSpec
 import org.scalatest.matchers.should.Matchers
 
-class PassStateTest extends AsyncFlatSpec with Matchers with BeforeAndAfterEach {
+class PassStepTest extends AsyncFlatSpec with Matchers with BeforeAndAfterEach {
   val om: ObjectMapper = new ObjectMapper()
   var data: DocumentContext = _
 
   override def beforeEach(): Unit = {
-    data = State.PARSER.parse(
+    data = Step.PARSER.parse(
       """
       {
         "foo": "bar",
@@ -32,7 +32,7 @@ class PassStateTest extends AsyncFlatSpec with Matchers with BeforeAndAfterEach 
   }
 
   "No result and resultPath" should "pass the context as-is" in {
-    val underTest = PassState(None, None, end = true)
+    val underTest = PassStep(None, None, end = true)
 
     underTest.perform(data) map {
       case (next, resultingContext) =>
@@ -43,7 +43,7 @@ class PassStateTest extends AsyncFlatSpec with Matchers with BeforeAndAfterEach 
   }
 
   "No result and resultPath with inputPath" should "pass the value in inputPath" in {
-    val underTest = PassState(None, None, inputPath = JsonPath.compile("$.baz"), end = true)
+    val underTest = PassStep(None, None, inputPath = JsonPath.compile("$.baz"), end = true)
 
     underTest.perform(data) map {
       case (next, resultingContext) =>
@@ -54,7 +54,7 @@ class PassStateTest extends AsyncFlatSpec with Matchers with BeforeAndAfterEach 
   }
 
   "No result and resultPath with inputPath" should "return the value in outputPath" in {
-    val underTest = PassState(None, None, outputPath = JsonPath.compile("$.baz"), end = true)
+    val underTest = PassStep(None, None, outputPath = JsonPath.compile("$.baz"), end = true)
 
     underTest.perform(data) map {
       case (next, resultingContext) =>
@@ -71,7 +71,7 @@ class PassStateTest extends AsyncFlatSpec with Matchers with BeforeAndAfterEach 
           "foo" : "bar"
         }
         """)
-    val underTest = PassState(Some(resultJson), None, end = true)
+    val underTest = PassStep(Some(resultJson), None, end = true)
 
     underTest.perform(data) map {
       case (next, resultingContext) =>
@@ -87,7 +87,7 @@ class PassStateTest extends AsyncFlatSpec with Matchers with BeforeAndAfterEach 
       """
         ["foo", "bar", {"baz":"bam"}]
         """)
-    val underTest = PassState(Some(resultJson), None, end = true)
+    val underTest = PassStep(Some(resultJson), None, end = true)
 
     underTest.perform(data) map {
       case (next, resultingContext) =>
@@ -104,7 +104,7 @@ class PassStateTest extends AsyncFlatSpec with Matchers with BeforeAndAfterEach 
       """
         "foo"
         """)
-    val underTest = PassState(Some(resultJson), None, end = true)
+    val underTest = PassStep(Some(resultJson), None, end = true)
 
     underTest.perform(data) map {
       case (next, resultingContext) =>
@@ -122,7 +122,7 @@ class PassStateTest extends AsyncFlatSpec with Matchers with BeforeAndAfterEach 
           "foo" : "bar"
         }
         """)
-    val underTest = PassState(Some(resultJson), None, resultPath = JsonPath.compile("$.result.bar"), end = true)
+    val underTest = PassStep(Some(resultJson), None, resultPath = JsonPath.compile("$.result.bar"), end = true)
 
     underTest.perform(data) map {
       case (next, resultingContext) =>
@@ -152,7 +152,7 @@ class PassStateTest extends AsyncFlatSpec with Matchers with BeforeAndAfterEach 
   }
 
   "resultPath without result" should "nest to the context inside itself" in {
-    val underTest = PassState(None, None, resultPath = JsonPath.compile("$.result"), end = true)
+    val underTest = PassStep(None, None, resultPath = JsonPath.compile("$.result"), end = true)
 
     underTest.perform(data) map {
       case (next, resultingContext) =>
@@ -201,7 +201,7 @@ class PassStateTest extends AsyncFlatSpec with Matchers with BeforeAndAfterEach 
           ]
         }
         """)
-    val underTest = PassState(None, Some(params), end = true)
+    val underTest = PassStep(None, Some(params), end = true)
 
     underTest.perform(data) map {
       case (next, resultingContext) =>

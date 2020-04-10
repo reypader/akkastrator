@@ -9,7 +9,7 @@ import com.typesafe.scalalogging.LazyLogging
 import scala.concurrent.{ExecutionContext, Future}
 import scala.util.matching.Regex
 
-object State {
+object Step {
   val PATH_PATTERN: Regex = "(^\\$.*)\\['([a-zA-Z0-9_-]+)'\\]".r
   val CONTEXT_ROOT: JsonPath = JsonPath.compile("$")
   val PARSER: ParseContext = JsonPath.using(
@@ -20,13 +20,13 @@ object State {
       .build())
   def emptyNode: JsonNode = PARSER.parse("{}").read(CONTEXT_ROOT)
 
-  abstract class State(stateType: String) extends LazyLogging {
+  abstract class Step(stateType: String) extends LazyLogging {
     type Context = DocumentContext
 
     def perform(context: Context)(implicit executionContext: ExecutionContext): Future[(String, Context)]
   }
 
-  abstract class FreeState(stateType: String, next: Option[String] = None, end: Boolean = false) extends State(stateType) {
+  abstract class FreeStep(stepType: String, next: Option[String] = None, end: Boolean = false) extends Step(stepType) {
     if (end && next.isDefined) {
       throw new IllegalArgumentException("`next` step must not be defined if `end` is true")
     }
@@ -34,7 +34,7 @@ object State {
       throw new IllegalArgumentException("`next` step must be defined if `end` is false")
     }
 
-    def getNext: String = if (end) TerminalState.END else next.get
+    def getNext: String = if (end) TerminalStep.END else next.get
 
   }
 
