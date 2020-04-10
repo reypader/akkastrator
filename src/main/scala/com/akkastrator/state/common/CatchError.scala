@@ -2,6 +2,7 @@ package com.akkastrator.state.common
 
 import com.akkastrator.state.StateException
 import com.akkastrator.state.StateException.ErrorDetails
+import com.akkastrator.state.States.{Decision, TransactionContext}
 import com.fasterxml.jackson.databind.{JsonNode, ObjectMapper}
 import com.jayway.jsonpath.JsonPath
 
@@ -19,21 +20,9 @@ object CatchError {
 
 trait CatchError {
 
-  case class Catcher(errorEquals: List[String], next: String, resultPath: JsonPath = Step.CONTEXT_ROOT) extends Result
-
   def errorCatch: List[Catcher]
 
-  def doHandle(context: Step#Context, error: ErrorDetails, catcher: Catcher): (String, Step#Context) = {
-    val errorOut = CatchError.makeNode(error.error, error.cause)
-    val out = if (catcher.resultPath == Step.CONTEXT_ROOT) {
-      Step.PARSER.parse(errorOut)
-    } else {
-      catcher.writeResult(context, errorOut)
-    }
-    (catcher.next, out)
-  }
-
-  final def handle(context: Step#Context, error: ErrorDetails): Try[(String, Step#Context)] = Try {
+  final def handle(context: TransactionContext, error: ErrorDetails): Try[Decision] = Try {
     val catcherResult: Option[Catcher] = errorCatch.find(catcher => {
       (catcher.errorEquals.length == 1 && catcher.errorEquals.contains(CatchError.ALL)) || catcher.errorEquals.contains(error.error)
     })
@@ -42,5 +31,18 @@ trait CatchError {
       case None => throw StateException.StateFailure("States.NoCatcherMatched", error.error)
     }
   }
+
+  def doHandle(context: TransactionContext, error: ErrorDetails, catcher: Catcher): Decision = {
+    val errorOut = CatchError.makeNode(error.error, error.cause)
+    val out = if (catcher.resultPath == Step.CONTEXT_ROOT) {
+      context.copy(data = Step.PARSER.parse(errorOut), currentState = catcher.next)
+    } else {
+      catcher.writeResult(context, errorOut) copy (currentState = catcher.next)
+
+    }
+    Decision(out)
+  }
+
+  case class Catcher(errorEquals: List[String], next: String, resultPath: JsonPath = Step.CONTEXT_ROOT) extends Result
 
 }

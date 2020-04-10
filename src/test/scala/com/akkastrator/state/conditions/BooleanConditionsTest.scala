@@ -2,7 +2,6 @@ package com.akkastrator.state.conditions
 
 import com.akkastrator.state.common.Step
 import com.fasterxml.jackson.databind.ObjectMapper
-import com.fasterxml.jackson.databind.node.BooleanNode
 import com.jayway.jsonpath.{DocumentContext, JsonPath}
 import org.scalatest.BeforeAndAfterEach
 import org.scalatest.flatspec.AnyFlatSpec

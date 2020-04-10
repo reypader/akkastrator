@@ -1,18 +1,17 @@
 package com.akkastrator.state.common
 
-import com.fasterxml.jackson.databind.{JsonNode, ObjectMapper}
-import com.jayway.jsonpath.{DocumentContext, JsonPath}
-import org.scalatest.BeforeAndAfterEach
+import java.util.UUID
+
+import com.akkastrator.state.States.TransactionContext
+import com.fasterxml.jackson.databind.ObjectMapper
+import com.jayway.jsonpath.JsonPath
 import org.scalatest.flatspec.AnyFlatSpec
 import org.scalatest.matchers.should.Matchers
 
-class InputTest extends AnyFlatSpec with Matchers with BeforeAndAfterEach {
+class InputTest extends AnyFlatSpec with Matchers {
   val om: ObjectMapper = new ObjectMapper()
-  var data: DocumentContext = _
-
-  override def beforeEach(): Unit = {
-    data = Step.PARSER.parse(
-      """
+  val data: TransactionContext = TransactionContext(UUID.randomUUID(), Step.PARSER.parse(
+    """
       {
         "foo": "bar",
         "baz" : {
@@ -26,8 +25,7 @@ class InputTest extends AnyFlatSpec with Matchers with BeforeAndAfterEach {
         ]
       }
       """
-    )
-  }
+  ), "test")
 
 
   "Input=$" should "return the entire JsonNode from the context" in {
@@ -37,7 +35,8 @@ class InputTest extends AnyFlatSpec with Matchers with BeforeAndAfterEach {
 
     val result = Fake.getInput(data)
 
-    result.read(Step.CONTEXT_ROOT).asInstanceOf[JsonNode] shouldEqual om.readTree("""
+    result shouldEqual om.readTree(
+      """
       {
         "foo": "bar",
         "baz" : {
@@ -60,7 +59,8 @@ class InputTest extends AnyFlatSpec with Matchers with BeforeAndAfterEach {
 
     val result = Fake.getInput(data)
 
-    result.read(Step.CONTEXT_ROOT).asInstanceOf[JsonNode] shouldEqual om.readTree("""
+    result shouldEqual om.readTree(
+      """
         {
           "gen": "bam"
         }
@@ -74,7 +74,8 @@ class InputTest extends AnyFlatSpec with Matchers with BeforeAndAfterEach {
 
     val result = Fake.getInput(data)
 
-    result.read(Step.CONTEXT_ROOT).asInstanceOf[JsonNode] shouldEqual om.readTree("""
+    result shouldEqual om.readTree(
+      """
         "tam"
       """)
   }

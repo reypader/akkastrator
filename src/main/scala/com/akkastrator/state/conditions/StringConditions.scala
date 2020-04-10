@@ -1,16 +1,19 @@
 package com.akkastrator.state.conditions
 
-import com.akkastrator.state.common.Step
-import com.akkastrator.state.conditions.Choices._
+import com.akkastrator.state.ChoiceState.{Comparison, VariableAccess}
+import com.akkastrator.state.States
 import com.akkastrator.state.conditions.LogicalConditions._
 import com.fasterxml.jackson.databind.node.TextNode
 import com.jayway.jsonpath.JsonPath
+import play.api.libs.functional.syntax._
+import play.api.libs.json.Reads._
+import play.api.libs.json.{JsPath, Reads}
 
 object StringConditions {
 
   trait StringSupport extends Comparison[String] with VariableAccess[String] {
-    override def getActualValue(context: Step#Context, variable: JsonPath): String = {
-      context.read(variable).asInstanceOf[TextNode].textValue()
+    override def getActualValue(context: States.Context, variable: JsonPath): String = {
+      context.read[TextNode](variable).textValue()
     }
   }
 
@@ -43,6 +46,31 @@ object StringConditions {
   case class StringGreaterThan(variable: JsonPath, stringGreaterThan: String) extends AbstractStringGreaterThan(variable, stringGreaterThan)
 
   case class StringGreaterThanEquals(variable: JsonPath, stringGreaterThanEquals: String) extends AbstractStringGreaterThanEquals(variable, stringGreaterThanEquals)
+
+  implicit val stringEqualsReads: Reads[StringEquals] = (
+    (JsPath \ "Variable").read[String].map(s => JsonPath.compile(s)) and
+      (JsPath \ "StringEquals").read[String]
+    ) (StringEquals.apply _)
+
+  implicit val stringLessThanReads: Reads[StringLessThan] = (
+    (JsPath \ "Variable").read[String].map(s => JsonPath.compile(s)) and
+      (JsPath \ "StringLessThan").read[String]
+    ) (StringLessThan.apply _)
+
+  implicit val stringLessThanEqualsReads: Reads[StringLessThanEquals] = (
+    (JsPath \ "Variable").read[String].map(s => JsonPath.compile(s)) and
+      (JsPath \ "StringLessThanEquals").read[String]
+    ) (StringLessThanEquals.apply _)
+
+  implicit val stringGreaterThanReads: Reads[StringGreaterThan] = (
+    (JsPath \ "Variable").read[String].map(s => JsonPath.compile(s)) and
+      (JsPath \ "StringGreaterThan").read[String]
+    ) (StringGreaterThan.apply _)
+
+  implicit val stringGreaterThanEqualsReads: Reads[StringGreaterThanEquals] = (
+    (JsPath \ "Variable").read[String].map(s => JsonPath.compile(s)) and
+      (JsPath \ "StringGreaterThanEquals").read[String]
+    ) (StringGreaterThanEquals.apply _)
 
 
 }

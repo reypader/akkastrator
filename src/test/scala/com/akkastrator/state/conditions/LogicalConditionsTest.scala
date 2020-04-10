@@ -1,7 +1,7 @@
 package com.akkastrator.state.conditions
 
+import com.akkastrator.state.ChoiceState.ChoiceRule
 import com.akkastrator.state.common.Step
-import com.akkastrator.state.conditions.Choices.ChoiceRule
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.jayway.jsonpath.DocumentContext
 import org.mockito.Mockito._
@@ -11,7 +11,7 @@ import org.scalatest.matchers.should.Matchers
 
 class LogicalConditionsTest extends AnyFlatSpec with Matchers with BeforeAndAfterEach {
   val om: ObjectMapper = new ObjectMapper()
-  var data: DocumentContext = Step.PARSER.parse(
+  val data: DocumentContext = Step.PARSER.parse(
     """
                 {
                   "foo": "bar"

@@ -1,18 +1,17 @@
 package com.akkastrator.state.common
 
+import java.util.UUID
+
+import com.akkastrator.state.States.TransactionContext
 import com.fasterxml.jackson.databind.{JsonNode, ObjectMapper}
-import com.jayway.jsonpath.{DocumentContext, JsonPath}
-import org.scalatest.BeforeAndAfterEach
+import com.jayway.jsonpath.JsonPath
 import org.scalatest.flatspec.AnyFlatSpec
 import org.scalatest.matchers.should.Matchers
 
-class ParameterTest extends AnyFlatSpec with Matchers with BeforeAndAfterEach {
+class ParameterTest extends AnyFlatSpec with Matchers {
   val om: ObjectMapper = new ObjectMapper()
-  var data: DocumentContext = _
-
-  override def beforeEach(): Unit = {
-    data = Step.PARSER.parse(
-      """
+  val data: TransactionContext = TransactionContext(UUID.randomUUID(), Step.PARSER.parse(
+    """
       {
         "foo": "bar",
         "baz" : {
@@ -26,8 +25,7 @@ class ParameterTest extends AnyFlatSpec with Matchers with BeforeAndAfterEach {
         ]
       }
       """
-    )
-  }
+  ), "test")
 
 
   "Parameter=None" should "return the entire JsonNode from the context" in {
@@ -39,7 +37,7 @@ class ParameterTest extends AnyFlatSpec with Matchers with BeforeAndAfterEach {
 
     val result = Fake.getInput(data)
 
-    result.read(Step.CONTEXT_ROOT).asInstanceOf[JsonNode] shouldEqual om.readTree(
+    result shouldEqual om.readTree(
       """
       {
         "foo": "bar",
@@ -58,7 +56,8 @@ class ParameterTest extends AnyFlatSpec with Matchers with BeforeAndAfterEach {
 
   "Parameter $ reference" should "replace a field with a referenced field from the effective input $.baz" in {
     object Fake extends Parameter {
-      override def parameters: Option[JsonNode] = Some(om.readTree("""
+      override def parameters: Option[JsonNode] = Some(om.readTree(
+        """
           {
             "herp.$" : "$.gen"
           }
@@ -69,7 +68,7 @@ class ParameterTest extends AnyFlatSpec with Matchers with BeforeAndAfterEach {
 
     val result = Fake.getInput(data)
 
-    result.read(Step.CONTEXT_ROOT).asInstanceOf[JsonNode] shouldEqual om.readTree(
+    result shouldEqual om.readTree(
       """
          {
             "herp" : "bam"
@@ -80,7 +79,8 @@ class ParameterTest extends AnyFlatSpec with Matchers with BeforeAndAfterEach {
 
   it should "replace a field with a referenced field from the effective input $" in {
     object Fake extends Parameter {
-      override def parameters: Option[JsonNode] = Some(om.readTree("""
+      override def parameters: Option[JsonNode] = Some(om.readTree(
+        """
           {
             "herp.$" : "$.baz"
           }
@@ -91,7 +91,7 @@ class ParameterTest extends AnyFlatSpec with Matchers with BeforeAndAfterEach {
 
     val result = Fake.getInput(data)
 
-    result.read(Step.CONTEXT_ROOT).asInstanceOf[JsonNode] shouldEqual om.readTree(
+    result shouldEqual om.readTree(
       """
          {
             "herp" : {
@@ -104,7 +104,8 @@ class ParameterTest extends AnyFlatSpec with Matchers with BeforeAndAfterEach {
 
   "Parameter with $$ reference" should "replace a field with a referenced field from the effective input $.baz and a context field $$" in {
     object Fake extends Parameter {
-      override def parameters: Option[JsonNode] = Some(om.readTree("""
+      override def parameters: Option[JsonNode] = Some(om.readTree(
+        """
           {
             "herp.$" : "$.gen",
             "derp.$" : "$$.pow[1].tin"
@@ -116,7 +117,7 @@ class ParameterTest extends AnyFlatSpec with Matchers with BeforeAndAfterEach {
 
     val result = Fake.getInput(data)
 
-    result.read(Step.CONTEXT_ROOT).asInstanceOf[JsonNode] shouldEqual om.readTree(
+    result shouldEqual om.readTree(
       """
          {
             "herp" : "bam",

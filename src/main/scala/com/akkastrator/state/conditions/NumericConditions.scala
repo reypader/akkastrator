@@ -1,16 +1,19 @@
 package com.akkastrator.state.conditions
 
-import com.akkastrator.state.common.Step
-import com.akkastrator.state.conditions.Choices._
+import com.akkastrator.state.ChoiceState.{Comparison, VariableAccess}
+import com.akkastrator.state.States
 import com.akkastrator.state.conditions.LogicalConditions._
 import com.fasterxml.jackson.databind.node.NumericNode
 import com.jayway.jsonpath.JsonPath
+import play.api.libs.functional.syntax._
+import play.api.libs.json.Reads._
+import play.api.libs.json.{Reads, _}
 
 object NumericConditions {
 
   trait NumericSupport extends Comparison[BigDecimal] with VariableAccess[BigDecimal] {
-    override def getActualValue(context: Step#Context, variable: JsonPath): BigDecimal = {
-      context.read(variable).asInstanceOf[NumericNode].decimalValue()
+    override def getActualValue(context: States.Context, variable: JsonPath): BigDecimal = {
+      context.read[NumericNode](variable).decimalValue()
     }
   }
 
@@ -44,4 +47,28 @@ object NumericConditions {
 
   case class NumericGreaterThanEquals(variable: JsonPath, numericGreaterThanEquals: BigDecimal) extends AbstractNumericGreaterThanEquals(variable, numericGreaterThanEquals)
 
+  implicit val numericEqualsReads: Reads[NumericEquals] = (
+    (JsPath \ "Variable").read[String].map(s => JsonPath.compile(s)) and
+      (JsPath \ "NumericEquals").read[BigDecimal]
+    ) (NumericEquals.apply _)
+
+  implicit val numericLessThanReads: Reads[NumericLessThan] = (
+    (JsPath \ "Variable").read[String].map(s => JsonPath.compile(s)) and
+      (JsPath \ "NumericLessThan").read[BigDecimal]
+    ) (NumericLessThan.apply _)
+
+  implicit val numericLessThanEqualsReads: Reads[NumericLessThanEquals] = (
+    (JsPath \ "Variable").read[String].map(s => JsonPath.compile(s)) and
+      (JsPath \ "NumericLessThanEquals").read[BigDecimal]
+    ) (NumericLessThanEquals.apply _)
+
+  implicit val numericGreaterThanReads: Reads[NumericGreaterThan] = (
+    (JsPath \ "Variable").read[String].map(s => JsonPath.compile(s)) and
+      (JsPath \ "NumericGreaterThan").read[BigDecimal]
+    ) (NumericGreaterThan.apply _)
+
+  implicit val numericGreaterThanEqualsReads: Reads[NumericGreaterThanEquals] = (
+    (JsPath \ "Variable").read[String].map(s => JsonPath.compile(s)) and
+      (JsPath \ "NumericGreaterThanEquals").read[BigDecimal]
+    ) (NumericGreaterThanEquals.apply _)
 }

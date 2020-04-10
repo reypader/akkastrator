@@ -1,16 +1,19 @@
 package com.akkastrator.state.conditions
 
-import com.akkastrator.state.common.Step
-import com.akkastrator.state.conditions.Choices._
+import com.akkastrator.state.ChoiceState.{Comparison, VariableAccess}
+import com.akkastrator.state.States
 import com.akkastrator.state.conditions.LogicalConditions.AbstractEqual
 import com.fasterxml.jackson.databind.node.BooleanNode
 import com.jayway.jsonpath.JsonPath
+import play.api.libs.functional.syntax._
+import play.api.libs.json.Reads._
+import play.api.libs.json.{JsPath, Reads}
 
 object BooleanConditions {
 
   trait BooleanSupport extends Comparison[Boolean] with VariableAccess[Boolean] {
-    override def getActualValue(context: Step#Context, variable: JsonPath): Boolean = {
-      context.read(variable).asInstanceOf[BooleanNode].booleanValue()
+    override def getActualValue(context: States.Context, variable: JsonPath): Boolean = {
+      context.read[BooleanNode](variable).booleanValue()
     }
   }
 
@@ -20,6 +23,8 @@ object BooleanConditions {
 
   case class BooleanEquals(variable: JsonPath, booleanEquals: Boolean) extends AbstractBooleanEquals(variable, booleanEquals)
 
-  case class TopBooleanEquals(variable: JsonPath, booleanEquals: Boolean, next: String) extends AbstractBooleanEquals(variable, booleanEquals) with TopLevelChoice
-
+  implicit val booleanEqualsReads: Reads[BooleanEquals] = (
+    (JsPath \ "Variable").read[String].map(s => JsonPath.compile(s)) and
+      (JsPath \ "BooleanEquals").read[Boolean]
+    ) (BooleanEquals.apply _)
 }

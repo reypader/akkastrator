@@ -1,18 +1,17 @@
 package com.akkastrator.state.common
 
+import java.util.UUID
+
+import com.akkastrator.state.States.TransactionContext
 import com.fasterxml.jackson.databind.{JsonNode, ObjectMapper}
-import com.jayway.jsonpath.{DocumentContext, JsonPath}
-import org.scalatest.BeforeAndAfterEach
+import com.jayway.jsonpath.JsonPath
 import org.scalatest.flatspec.AnyFlatSpec
 import org.scalatest.matchers.should.Matchers
 
-class ResultTest extends AnyFlatSpec with Matchers with BeforeAndAfterEach {
+class ResultTest extends AnyFlatSpec with Matchers {
   val om: ObjectMapper = new ObjectMapper()
-  var data: DocumentContext = _
-
-  override def beforeEach(): Unit = {
-    data = Step.PARSER.parse(
-      """
+  val data: TransactionContext = TransactionContext(UUID.randomUUID(), Step.PARSER.parse(
+    """
       {
         "foo": "bar",
         "baz" : {
@@ -26,8 +25,7 @@ class ResultTest extends AnyFlatSpec with Matchers with BeforeAndAfterEach {
         ]
       }
       """
-    )
-  }
+  ), "test")
 
 
   "Result=$" should "replace the entire context" in {
@@ -35,18 +33,19 @@ class ResultTest extends AnyFlatSpec with Matchers with BeforeAndAfterEach {
       override def resultPath: JsonPath = JsonPath.compile("$")
     }
 
-    val result = Fake.writeResult(data, om.readTree("""
+    val result = Fake.writeResult(data, om.readTree(
+      """
         {
           "gen": "bam"
         }
         """))
 
-    result.read[JsonNode](Step.CONTEXT_ROOT) shouldEqual Step.PARSER.parse(
+    result.data.read[JsonNode](Step.CONTEXT_ROOT) shouldEqual om.readTree(
       """
         {
           "gen": "bam"
         }
-      """).read[JsonNode](Step.CONTEXT_ROOT)
+      """)
   }
 
   "Result=$._" should "replace a field from the context" in {
@@ -54,11 +53,12 @@ class ResultTest extends AnyFlatSpec with Matchers with BeforeAndAfterEach {
       override def resultPath: JsonPath = JsonPath.compile("$.baz")
     }
 
-    val result = Fake.writeResult(data, om.readTree("""
+    val result = Fake.writeResult(data, om.readTree(
+      """
           "derp"
         """))
 
-    result.read[JsonNode](Step.CONTEXT_ROOT) shouldEqual Step.PARSER.parse(
+    result.data.read[JsonNode](Step.CONTEXT_ROOT) shouldEqual om.readTree(
       """
         {
         "foo": "bar",
@@ -70,7 +70,7 @@ class ResultTest extends AnyFlatSpec with Matchers with BeforeAndAfterEach {
         }
         ]
       }
-      """).read[JsonNode](Step.CONTEXT_ROOT)
+      """)
   }
 
   it should "return a Context of a field from the context no matter how deeply nested" in {
@@ -78,13 +78,14 @@ class ResultTest extends AnyFlatSpec with Matchers with BeforeAndAfterEach {
       override def resultPath: JsonPath = JsonPath.compile("$.pow[1].tin")
     }
 
-    val result = Fake.writeResult(data, om.readTree("""
+    val result = Fake.writeResult(data, om.readTree(
+      """
           {
            "gen": "bam"
           }
         """))
 
-    result.read[JsonNode](Step.CONTEXT_ROOT) shouldEqual Step.PARSER.parse(
+    result.data.read[JsonNode](Step.CONTEXT_ROOT) shouldEqual om.readTree(
       """
         {
         "foo": "bar",
@@ -100,7 +101,7 @@ class ResultTest extends AnyFlatSpec with Matchers with BeforeAndAfterEach {
         }
         ]
       }
-      """).read[JsonNode](Step.CONTEXT_ROOT)
+      """)
   }
 
 }

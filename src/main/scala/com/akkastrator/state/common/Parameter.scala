@@ -1,5 +1,7 @@
 package com.akkastrator.state.common
 
+import com.akkastrator.state.States
+import com.akkastrator.state.States.TransactionContext
 import com.fasterxml.jackson.databind.JsonNode
 import com.fasterxml.jackson.databind.node.{ArrayNode, ObjectNode, ValueNode}
 import com.jayway.jsonpath.JsonPath
@@ -9,15 +11,15 @@ trait Parameter extends Input with LazyLogging {
 
   def parameters: Option[JsonNode]
 
-  override def getInput(context: Step#Context): Step#Context = {
+  override def getInput(context: TransactionContext): JsonNode = {
     val effectiveInput = super.getInput(context)
-    parameters.map(p => Step.PARSER.parse(assignValues(context, effectiveInput, p))).getOrElse(effectiveInput)
+    parameters.map(p => assignValues(context, Step.PARSER.parse(effectiveInput), p)).getOrElse(effectiveInput)
   }
 
-  private def assignValues[T <: JsonNode](originalContext: Step#Context, context: Step#Context, result: T): T =
+  private def assignValues[T <: JsonNode](originalContext: TransactionContext, context: States.Context, result: T): JsonNode =
     result match {
       case value: ObjectNode =>
-        var copy = value.deepCopy()
+        var copy = value.deepCopy[ObjectNode]()
         value.fields.forEachRemaining(entry => {
           logger.info("Reading " + entry.getKey)
           if (entry.getKey.endsWith(".$")) {
@@ -26,7 +28,7 @@ trait Parameter extends Input with LazyLogging {
             val ref = entry.getValue.textValue()
             val newVal: JsonNode = if (ref.startsWith("$$")) {
               val path = JsonPath.compile(ref.substring(1))
-              originalContext.read(path)
+              originalContext.data.read(path)
             } else {
               val path = JsonPath.compile(ref)
               context.read(path)
@@ -37,15 +39,15 @@ trait Parameter extends Input with LazyLogging {
           }
         }
         )
-        copy.asInstanceOf[T]
+        copy
       case value: ArrayNode =>
-        val copy = value.deepCopy()
+        val copy = value.deepCopy[ArrayNode]()
         for (i <- 0 until value.size()) {
           val newVal = assignValues(originalContext, context, value.get(i))
           copy.set(i, newVal)
         }
-        copy.asInstanceOf[T]
-      case value: ValueNode => value.asInstanceOf[T]
+        copy
+      case value: ValueNode => value
       case _ => throw new UnsupportedOperationException()
     }
 }

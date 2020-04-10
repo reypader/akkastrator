@@ -1,6 +1,6 @@
 package com.akkastrator.state
 
-import com.akkastrator.state.common.Step
+import com.akkastrator.state.States.{Context, TransactionContext}
 import com.jayway.jsonpath.JsonPath
 
 object StateException {
@@ -15,8 +15,8 @@ object StateException {
 
   case class StateError(error: String, cause: String, rootCause: Throwable) extends Exception(rootCause) with ErrorDetails
 
-  case class UnresolvableChoiceException(state: Step, context: Step#Context) extends Exception
+  case class UnresolvableChoiceException(state: States.State, context: TransactionContext) extends Exception
 
-  case class ResultMappingException(cause: Throwable, path: JsonPath, context: Step#Context) extends RuntimeException(cause)
+  case class ResultMappingException(cause: Throwable, path: JsonPath, context: Context) extends RuntimeException(cause)
 
 }

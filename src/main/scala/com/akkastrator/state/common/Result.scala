@@ -1,6 +1,7 @@
 package com.akkastrator.state.common
 
-import com.akkastrator.state.StateException
+import com.akkastrator.state.States._
+import com.akkastrator.state.{StateException, States}
 import com.fasterxml.jackson.databind.JsonNode
 import com.jayway.jsonpath.{JsonPath, PathNotFoundException}
 
@@ -9,18 +10,15 @@ import scala.util.{Success, Try}
 trait Result {
   def resultPath: JsonPath
 
-  def writeResult(context: Step#Context, value: JsonNode): Step#Context = if (resultPath.getPath == Step.CONTEXT_ROOT.getPath) {
-    Step.PARSER.parse(value)
+  def writeResult(context: TransactionContext, value: JsonNode): TransactionContext = if (resultPath.getPath == Step.CONTEXT_ROOT.getPath) {
+    context.copy(data = Step.PARSER.parse(value))
   } else {
-    var newVal = value
-    if (context.read(Step.CONTEXT_ROOT).asInstanceOf[JsonNode] == value) {
-      newVal = value.deepCopy()
-    }
-    setValue(context, resultPath, newVal)
+    val newContext = Step.PARSER.parse(context.data.read[JsonNode](Step.CONTEXT_ROOT).deepCopy[JsonNode]())
+    context.copy(data = setValue(newContext, resultPath, value))
   }
 
 
-  private def setValue(context: Step#Context, path: JsonPath, value: JsonNode): Step#Context = {
+  private def setValue(context: Context, path: JsonPath, value: JsonNode): States.Context = {
     val Step.PATH_PATTERN(parentPath, key) = path.getPath
     var theContext = context
 
