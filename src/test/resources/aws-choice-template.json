@@ -83,7 +83,7 @@
         {
           "Variable": "$.foo",
           "TimestampGreaterThanEquals": "3",
-          "Next": "SecondMatchState"
+          "Next": "FirstMatchState"
         }
       ],
       "Default": "DefaultState"
