@@ -41,21 +41,19 @@ object ChoiceState {
       case _ => throw new RuntimeException(s"Unidentifiable Choice : ${json.toString()}")
     }
   }.map(_.reads(json)).recover(ex => JsError(ex.getMessage)).get
-  implicit val choiceRuleListRead: Reads[List[ChoiceRule]] = Reads.list[ChoiceRule]
 
 
   implicit val topLevelChoiceRead: Reads[TopLevelChoice] = (json: JsValue) => {
     choiceRuleRead.reads(json).flatMap(x => json match {
       case JsObject(o) if o.contains("Next") => JsSuccess(new TopLevelChoice {
-        override def evaluate(context: States.Context): Boolean = x.evaluate(context)
-
+        override def inner : ChoiceRule = x
         override def next: String = o("Next").asInstanceOf[JsString].value
       })
       case _ => JsError(s"Top level choice must have 'Next' : ${json.toString()}")
     })
   }
 
-
+  implicit val choiceRuleListRead: Reads[List[ChoiceRule]] = Reads.list[ChoiceRule]
   implicit val topLevelChoiceListRead: Reads[List[TopLevelChoice]] = Reads.list[TopLevelChoice]
 
   implicit val choiceStateRead: Reads[ChoiceState] = (
@@ -80,7 +78,9 @@ object ChoiceState {
   }
 
   trait TopLevelChoice extends ChoiceRule {
+    def inner : ChoiceRule
     def next: String
+    override def evaluate(context: States.Context): Boolean = inner.evaluate(context)
   }
 
 }

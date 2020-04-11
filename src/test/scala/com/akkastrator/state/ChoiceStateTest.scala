@@ -36,7 +36,8 @@ class ChoiceStateTest extends AnyFlatSpec with Matchers {
       new TopLevelChoice {
         override def next: String = "NEXT"
 
-        override def evaluate(context: States.Context): Boolean = condition.evaluate(context)
+        override def inner: ChoiceState.ChoiceRule = condition
+
       }
     ), default = Some("DEFAULT"))
 
@@ -54,7 +55,7 @@ class ChoiceStateTest extends AnyFlatSpec with Matchers {
       new TopLevelChoice {
         override def next: String = "NEXT"
 
-        override def evaluate(context: States.Context): Boolean = condition.evaluate(context)
+        override def inner: ChoiceState.ChoiceRule = condition
       }
     ), default = Some("DEFAULT"))
 
@@ -70,9 +71,9 @@ class ChoiceStateTest extends AnyFlatSpec with Matchers {
     val condition = LogicalConditions.Not(StringConditions.StringEquals(JsonPath.compile("$.foo"), "baz"))
     val underTest = ChoiceState(choices = List(
       new TopLevelChoice {
-        override def next: String = "NEXT"
+        override def inner: ChoiceState.ChoiceRule = condition
 
-        override def evaluate(context: States.Context): Boolean = condition.evaluate(context)
+        override def next: String = "NEXT"
       }
     ), default = Some("DEFAULT"))
 
@@ -89,9 +90,9 @@ class ChoiceStateTest extends AnyFlatSpec with Matchers {
 
     val underTest = ChoiceState(choices = List(
       new TopLevelChoice {
-        override def next: String = "NEXT"
+        override def inner: ChoiceState.ChoiceRule = condition
 
-        override def evaluate(context: States.Context): Boolean = condition.evaluate(context)
+        override def next: String = "NEXT"
       }
     ), default = Some("DEFAULT"))
 

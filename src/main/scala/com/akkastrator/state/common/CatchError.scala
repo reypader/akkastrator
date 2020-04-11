@@ -34,11 +34,10 @@ trait CatchError {
 
   def doHandle(context: TransactionContext, error: ErrorDetails, catcher: Catcher): Decision = {
     val errorOut = CatchError.makeNode(error.error, error.cause)
-    val out = if (catcher.resultPath.get.getPath == States.CONTEXT_ROOT) {
+    val out = if (catcher.resultPath.isDefined && catcher.resultPath.get.getPath == States.CONTEXT_ROOT) {
       context.copy(data = States.PARSER.parse(errorOut), currentState = catcher.next)
     } else {
       catcher.writeResult(context, errorOut) copy (currentState = catcher.next)
-
     }
     Decision(out)
   }

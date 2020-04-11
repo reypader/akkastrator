@@ -1,7 +1,6 @@
 package com.akkastrator.state
 
-import com.akkastrator.state.common.States
-import com.akkastrator.state.common.States.{Action, Computation, Decision, ErrorHandling, InputOutput, State, TransactionContext, Transition}
+import com.akkastrator.state.common.States.{Action, Computation, Decision, ErrorHandling, InputOutput, State, TransactionContext, Transition, jsonPathRead}
 import com.fasterxml.jackson.databind.JsonNode
 import com.jayway.jsonpath.JsonPath
 import play.api.libs.functional.syntax._
@@ -9,9 +8,9 @@ import play.api.libs.json.Reads._
 import play.api.libs.json.{Reads, _}
 
 import scala.util.Try
-import com.akkastrator.state.common.States.jsonPathRead
 
 object TaskState {
+  val DEFAULT_TIMEOUT_SECONDS = 60
   implicit val taskStateRead: Reads[TaskState] = (
     (JsPath \ "InputPath").readNullable[JsonPath] and
       (JsPath \ "ResultPath").readNullable[JsonPath] and
@@ -23,7 +22,7 @@ object TaskState {
       (JsPath \ "Retry").readNullable[ErrorRetry] and
       (JsPath \ "Catch").readNullable[ErrorCatch] and
       (JsPath \ "Resource").read[String] and
-      (JsPath \ "TimeoutSeconds").read[Int] and
+      (JsPath \ "TimeoutSeconds").readWithDefault(DEFAULT_TIMEOUT_SECONDS) and
       (JsPath \ "HeartBeatSeconds").readNullable[Int]
     ) (TaskState.apply _)
 }
@@ -38,7 +37,7 @@ case class TaskState(inputPath: Option[JsonPath] = None,
                      errorRetry: Option[ErrorRetry] = None,
                      errorCatch: Option[ErrorCatch] = None,
                      resource: String,
-                     timeoutSeconds: Int = 60,
+                     timeoutSeconds: Int = TaskState.DEFAULT_TIMEOUT_SECONDS,
                      heartBeatSeconds: Option[Int])
   extends State("Task", comment) with InputOutput with Computation with Transition with ErrorHandling {
   if (resource == null || resource.isBlank) {

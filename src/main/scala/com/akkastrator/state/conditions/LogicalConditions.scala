@@ -66,7 +66,7 @@ object LogicalConditions {
 
   case class Or(or: List[ChoiceRule]) extends AbstractOr
 
-  implicit val andRead: Reads[And] = Json.reads[And]
-  implicit val orRead: Reads[Or] = Json.reads[Or]
-  implicit val notRead: Reads[Not] = Json.reads[Not]
+  implicit val andRead: Reads[And] = (JsPath \ "And").read[List[ChoiceRule]].map(r => And(r))
+  implicit val orRead: Reads[Or] = (JsPath \ "Or").read[List[ChoiceRule]].map(r => Or(r))
+  implicit val notRead: Reads[Not] = (JsPath \ "Not").read[ChoiceRule].map(r => Not(r))
 }

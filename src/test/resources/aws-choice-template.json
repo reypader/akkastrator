@@ -1,0 +1,116 @@
+{
+  "Comment": "An example of the Amazon States Language using a choice state.",
+  "StartAt": "FirstState",
+  "States": {
+    "FirstState": {
+      "Type": "Task",
+      "Resource": "arn:aws:lambda:REGION:ACCOUNT_ID:function:FUNCTION_NAME",
+      "Next": "ChoiceState"
+    },
+    "ChoiceState": {
+      "Type" : "Choice",
+      "Choices": [
+        {
+          "Variable": "$.foo",
+          "NumericEquals": 1,
+          "Next": "FirstMatchState"
+        },
+        {
+          "Variable": "$.foo",
+          "NumericLessThan": 2,
+          "Next": "SecondMatchState"
+        },
+        {
+          "Variable": "$.foo",
+          "NumericLessThanEquals": 3,
+          "Next": "SecondMatchState"
+        },
+        {
+          "Variable": "$.foo",
+          "NumericGreaterThan": 2,
+          "Next": "SecondMatchState"
+        },
+        {
+          "Variable": "$.foo",
+          "NumericGreaterThanEquals": 3,
+          "Next": "SecondMatchState"
+        },
+        {
+          "Variable": "$.foo",
+          "StringEquals": "1",
+          "Next": "FirstMatchState"
+        },
+        {
+          "Variable": "$.foo",
+          "StringLessThan": "2",
+          "Next": "SecondMatchState"
+        },
+        {
+          "Variable": "$.foo",
+          "StringLessThanEquals": "3",
+          "Next": "SecondMatchState"
+        },
+        {
+          "Variable": "$.foo",
+          "StringGreaterThan": "2",
+          "Next": "SecondMatchState"
+        },
+        {
+          "Variable": "$.foo",
+          "StringGreaterThanEquals": "3",
+          "Next": "SecondMatchState"
+        },
+        {
+          "Variable": "$.foo",
+          "TimestampEquals": "1",
+          "Next": "FirstMatchState"
+        },
+        {
+          "Variable": "$.foo",
+          "TimestampLessThan": "2",
+          "Next": "SecondMatchState"
+        },
+        {
+          "Variable": "$.foo",
+          "TimestampLessThanEquals": "3",
+          "Next": "SecondMatchState"
+        },
+        {
+          "Variable": "$.foo",
+          "TimestampGreaterThan": "2",
+          "Next": "SecondMatchState"
+        },
+        {
+          "Variable": "$.foo",
+          "TimestampGreaterThanEquals": "3",
+          "Next": "SecondMatchState"
+        }
+      ],
+      "Default": "DefaultState"
+    },
+
+    "FirstMatchState": {
+      "Type" : "Task",
+      "Resource": "arn:aws:lambda:REGION:ACCOUNT_ID:function:OnFirstMatch",
+      "Next": "NextState"
+    },
+
+    "SecondMatchState": {
+      "Type" : "Task",
+      "Resource": "arn:aws:lambda:REGION:ACCOUNT_ID:function:OnSecondMatch",
+      "Next": "NextState"
+    },
+
+    "DefaultState": {
+      "Type": "Fail",
+      "Error": "DefaultStateError",
+      "Cause": "No Matches!"
+    },
+
+    "NextState": {
+      "Type": "Task",
+      "Resource": "arn:aws:lambda:REGION:ACCOUNT_ID:function:FUNCTION_NAME",
+      "End": true
+    }
+  }
+}
