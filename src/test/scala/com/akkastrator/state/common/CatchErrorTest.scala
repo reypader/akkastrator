@@ -21,7 +21,7 @@ class CatchErrorTest extends AnyFlatSpec with Matchers {
 
   object Fake extends CatchError {
     override def errorCatch: List[Fake.Catcher] = List(Catcher(List("A"), "nextA"),
-      Catcher(List("B"), "nextB", JsonPath.compile("$.err.errr")),
+      Catcher(List("B"), "nextB", Some(JsonPath.compile("$.err.errr"))),
       Catcher(List("C", "D"), "nextC"),
       Catcher(List(CatchError.ALL), "nextX"))
   }
@@ -31,7 +31,7 @@ class CatchErrorTest extends AnyFlatSpec with Matchers {
     val result = Fake.handle(data, StateException.StateFailure("A", "1"))
     val Decision(context) = result.get
     context.currentState shouldEqual "nextA"
-    context.data.read[JsonNode](States.CONTEXT_ROOT) shouldEqual om.readTree(
+    context.data.read[JsonNode](States.CONTEXT_ROOT_PATH) shouldEqual om.readTree(
       """
         {
           "error" : "A",
@@ -45,7 +45,7 @@ class CatchErrorTest extends AnyFlatSpec with Matchers {
 
     val Decision(context) = result.get
     context.currentState shouldEqual "nextB"
-    context.data.read[JsonNode](States.CONTEXT_ROOT) shouldEqual om.readTree(
+    context.data.read[JsonNode](States.CONTEXT_ROOT_PATH) shouldEqual om.readTree(
       """
          {
         "foo": "bar",
@@ -64,7 +64,7 @@ class CatchErrorTest extends AnyFlatSpec with Matchers {
     val result = Fake.handle(data, StateException.StateFailure("D", "3"))
     val Decision(context) = result.get
     context.currentState shouldEqual "nextC"
-    context.data.read[JsonNode](States.CONTEXT_ROOT) shouldEqual om.readTree(
+    context.data.read[JsonNode](States.CONTEXT_ROOT_PATH) shouldEqual om.readTree(
       """
          {
           "error" : "D",
@@ -78,7 +78,7 @@ class CatchErrorTest extends AnyFlatSpec with Matchers {
     val result = Fake.handle(data, StateException.StateFailure("Z", "9"))
     val Decision(context) = result.get
     context.currentState shouldEqual "nextX"
-    context.data.read[JsonNode](States.CONTEXT_ROOT) shouldEqual om.readTree(
+    context.data.read[JsonNode](States.CONTEXT_ROOT_PATH) shouldEqual om.readTree(
       """
          {
           "error" : "Z",

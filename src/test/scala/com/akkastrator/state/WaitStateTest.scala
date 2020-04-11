@@ -33,10 +33,10 @@ class WaitStateTest extends AsyncFlatSpec with Matchers {
     val Action(targetResource, payload) = underTest.prepare(data).get
 
     targetResource shouldEqual s"internal:wait:${anchor.plusSeconds(3).format(WaitState.TIMESTAMP_FORMAT)}:execution:${data.transactionId}"
-    payload shouldEqual data.data.read[JsonNode](States.CONTEXT_ROOT)
+    payload shouldEqual data.data.read[JsonNode](States.CONTEXT_ROOT_PATH)
 
     val Decision(newContext) = underTest.decide(data, payload).get
-    newContext.data.read[JsonNode](States.CONTEXT_ROOT) shouldEqual data.data.read[JsonNode](States.CONTEXT_ROOT)
+    newContext.data.read[JsonNode](States.CONTEXT_ROOT_PATH) shouldEqual data.data.read[JsonNode](States.CONTEXT_ROOT_PATH)
     newContext.currentState shouldEqual States.END
 
   }
@@ -49,10 +49,10 @@ class WaitStateTest extends AsyncFlatSpec with Matchers {
     val Action(targetResource, payload) = underTest.prepare(data).get
 
     targetResource shouldEqual s"internal:wait:${deadline.format(WaitState.TIMESTAMP_FORMAT)}:execution:${data.transactionId}"
-    payload shouldEqual data.data.read[JsonNode](States.CONTEXT_ROOT)
+    payload shouldEqual data.data.read[JsonNode](States.CONTEXT_ROOT_PATH)
 
     val Decision(newContext) = underTest.decide(data, payload).get
-    newContext.data.read[JsonNode](States.CONTEXT_ROOT) shouldEqual data.data.read[JsonNode](States.CONTEXT_ROOT)
+    newContext.data.read[JsonNode](States.CONTEXT_ROOT_PATH) shouldEqual data.data.read[JsonNode](States.CONTEXT_ROOT_PATH)
     newContext.currentState shouldEqual "DERP"
   }
 
@@ -63,25 +63,25 @@ class WaitStateTest extends AsyncFlatSpec with Matchers {
     val Action(targetResource, payload) = underTest.prepare(data).get
 
     targetResource shouldEqual s"internal:wait:${anchor.plusSeconds(6).format(WaitState.TIMESTAMP_FORMAT)}:execution:${data.transactionId}"
-    payload shouldEqual data.data.read[JsonNode](States.CONTEXT_ROOT)
+    payload shouldEqual data.data.read[JsonNode](States.CONTEXT_ROOT_PATH)
 
     val Decision(newContext) = underTest.decide(data, payload).get
-    newContext.data.read[JsonNode](States.CONTEXT_ROOT) shouldEqual data.data.read[JsonNode](States.CONTEXT_ROOT)
+    newContext.data.read[JsonNode](States.CONTEXT_ROOT_PATH) shouldEqual data.data.read[JsonNode](States.CONTEXT_ROOT_PATH)
     newContext.currentState shouldEqual States.END
   }
 
   it should "attempt to wait until the provided deadline from the path" in {
     val deadline = OffsetDateTime.parse("2029-12-12T12:00:00Z")
-    val underTest = WaitState(seconds = None, secondsPath = None, timestamp = None, timestampPath = Some(JsonPath.compile("$.bam")), end = true, outputPath = JsonPath.compile("$.gen"))
+    val underTest = WaitState(seconds = None, secondsPath = None, timestamp = None, timestampPath = Some(JsonPath.compile("$.bam")), end = true, outputPath = Some(JsonPath.compile("$.gen")))
 
 
     val Action(targetResource, payload) = underTest.prepare(data).get
 
     targetResource shouldEqual s"internal:wait:${deadline.format(WaitState.TIMESTAMP_FORMAT)}:execution:${data.transactionId}"
-    payload shouldEqual data.data.read[JsonNode](States.CONTEXT_ROOT)
+    payload shouldEqual data.data.read[JsonNode](States.CONTEXT_ROOT_PATH)
 
     val Decision(newContext) = underTest.decide(data, payload).get
-    newContext.data.read[JsonNode](States.CONTEXT_ROOT) shouldEqual om.readTree(
+    newContext.data.read[JsonNode](States.CONTEXT_ROOT_PATH) shouldEqual om.readTree(
       """
           {
           "a" : "b"

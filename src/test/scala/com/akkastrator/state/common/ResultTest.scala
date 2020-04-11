@@ -30,7 +30,7 @@ class ResultTest extends AnyFlatSpec with Matchers {
 
   "Result=$" should "replace the entire context" in {
     object Fake extends Result {
-      override def resultPath: JsonPath = JsonPath.compile("$")
+      override def resultPath:  Option[JsonPath] = Some(JsonPath.compile("$"))
     }
 
     val result = Fake.writeResult(data, om.readTree(
@@ -40,7 +40,7 @@ class ResultTest extends AnyFlatSpec with Matchers {
         }
         """))
 
-    result.data.read[JsonNode](States.CONTEXT_ROOT) shouldEqual om.readTree(
+    result.data.read[JsonNode](States.CONTEXT_ROOT_PATH) shouldEqual om.readTree(
       """
         {
           "gen": "bam"
@@ -50,7 +50,7 @@ class ResultTest extends AnyFlatSpec with Matchers {
 
   "Result=$._" should "replace a field from the context" in {
     object Fake extends Result {
-      override def resultPath: JsonPath = JsonPath.compile("$.baz")
+      override def resultPath:  Option[JsonPath] = Some(JsonPath.compile("$.baz"))
     }
 
     val result = Fake.writeResult(data, om.readTree(
@@ -58,7 +58,7 @@ class ResultTest extends AnyFlatSpec with Matchers {
           "derp"
         """))
 
-    result.data.read[JsonNode](States.CONTEXT_ROOT) shouldEqual om.readTree(
+    result.data.read[JsonNode](States.CONTEXT_ROOT_PATH) shouldEqual om.readTree(
       """
         {
         "foo": "bar",
@@ -75,7 +75,7 @@ class ResultTest extends AnyFlatSpec with Matchers {
 
   it should "return a Context of a field from the context no matter how deeply nested" in {
     object Fake extends Result {
-      override def resultPath: JsonPath = JsonPath.compile("$.pow[1].tin")
+      override def resultPath: Option[JsonPath] = Some(JsonPath.compile("$.pow[1].tin"))
     }
 
     val result = Fake.writeResult(data, om.readTree(
@@ -85,7 +85,7 @@ class ResultTest extends AnyFlatSpec with Matchers {
           }
         """))
 
-    result.data.read[JsonNode](States.CONTEXT_ROOT) shouldEqual om.readTree(
+    result.data.read[JsonNode](States.CONTEXT_ROOT_PATH) shouldEqual om.readTree(
       """
         {
         "foo": "bar",

@@ -6,18 +6,19 @@ import com.jayway.jsonpath.JsonPath
 import play.api.libs.functional.syntax._
 import play.api.libs.json.Reads._
 import play.api.libs.json.{Reads, _}
+import com.akkastrator.state.common.States.jsonPathRead
 
 object ErrorCatch {
   implicit val errorCatchRead: Reads[ErrorCatch] = (
     (JsPath \ "ErrorEquals").read[List[String]] and
       (JsPath \ "Next").read[String] and
-      (JsPath \ "ResultPath").read[String].map(s => JsonPath.compile(s))
+      (JsPath \ "ResultPath").readNullable[JsonPath]
     ) (ErrorCatch.apply _)
 }
 
 case class ErrorCatch(errorEquals: List[String],
                       next: String,
-                      resultPath: JsonPath = States.CONTEXT_ROOT) {
+                      resultPath: Option[JsonPath] = None) {
   if (errorEquals == null || errorEquals.isEmpty) {
     throw new IllegalArgumentException("errorEquals must be specified")
   }

@@ -30,7 +30,7 @@ class InputTest extends AnyFlatSpec with Matchers {
 
   "Input=$" should "return the entire JsonNode from the context" in {
     object Fake extends Input {
-      override def inputPath: JsonPath = JsonPath.compile("$")
+      override def inputPath: Option[JsonPath] = Some(JsonPath.compile("$"))
     }
 
     val result = Fake.getInput(data)
@@ -54,7 +54,7 @@ class InputTest extends AnyFlatSpec with Matchers {
 
   "Input=$._" should "return a JsonNode of a field from the context" in {
     object Fake extends Input {
-      override def inputPath: JsonPath = JsonPath.compile("$.baz")
+      override def inputPath: Option[JsonPath] = Some(JsonPath.compile("$.baz"))
     }
 
     val result = Fake.getInput(data)
@@ -69,7 +69,7 @@ class InputTest extends AnyFlatSpec with Matchers {
 
   it should "return a JsonNode of a field from the context no matter how deeply nested" in {
     object Fake extends Input {
-      override def inputPath: JsonPath = JsonPath.compile("$.pow[1].tin")
+      override def inputPath: Option[JsonPath] = Some(JsonPath.compile("$.pow[1].tin"))
     }
 
     val result = Fake.getInput(data)

@@ -9,15 +9,16 @@ import play.api.libs.json.Reads._
 import play.api.libs.json.{Reads, _}
 
 import scala.util.Try
+import com.akkastrator.state.common.States.jsonPathRead
 
 object ParallelState {
   implicit val stateMachineListRead: Reads[List[StateMachine]] = Reads.list[StateMachine]
 
   implicit val parallelStateRead: Reads[ParallelState] = (
-    (JsPath \ "InputPath").read[String].map(s => JsonPath.compile(s)) and
-      (JsPath \ "ResultPath").read[String].map(s => JsonPath.compile(s)) and
-      (JsPath \ "OutputPath").read[String].map(s => JsonPath.compile(s)) and
-      (JsPath \ "End").read[Boolean] and
+    (JsPath \ "InputPath").readNullable[JsonPath] and
+      (JsPath \ "ResultPath").readNullable[JsonPath] and
+      (JsPath \ "OutputPath").readNullable[JsonPath] and
+      (JsPath \ "End").readWithDefault(false) and
       (JsPath \ "Next").readNullable[String] and
       (JsPath \ "Parameters").readNullable[JsonNode] and
       (JsPath \ "Comment").readNullable[String] and
@@ -27,9 +28,9 @@ object ParallelState {
     ) (ParallelState.apply _)
 }
 
-case class ParallelState(inputPath: JsonPath = States.CONTEXT_ROOT,
-                         resultPath: JsonPath = States.CONTEXT_ROOT,
-                         outputPath: JsonPath = States.CONTEXT_ROOT,
+case class ParallelState(inputPath: Option[JsonPath] = None,
+                         resultPath: Option[JsonPath] = None,
+                         outputPath: Option[JsonPath] = None,
                          end: Boolean = false,
                          next: Option[String] = None,
                          parameters: Option[JsonNode] = None,

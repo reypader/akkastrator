@@ -32,7 +32,7 @@ class ParameterTest extends AnyFlatSpec with Matchers {
     object Fake extends Parameter {
       override def parameters: Option[JsonNode] = None
 
-      override def inputPath: JsonPath = JsonPath.compile("$")
+      override def inputPath: Option[JsonPath] = Some(JsonPath.compile("$"))
     }
 
     val result = Fake.getInput(data)
@@ -63,7 +63,7 @@ class ParameterTest extends AnyFlatSpec with Matchers {
           }
           """))
 
-      override def inputPath: JsonPath = JsonPath.compile("$.baz")
+      override def inputPath:  Option[JsonPath] = Some(JsonPath.compile("$.baz"))
     }
 
     val result = Fake.getInput(data)
@@ -86,7 +86,7 @@ class ParameterTest extends AnyFlatSpec with Matchers {
           }
           """))
 
-      override def inputPath: JsonPath = JsonPath.compile("$")
+      override def inputPath: Option[JsonPath] = Some(JsonPath.compile("$"))
     }
 
     val result = Fake.getInput(data)
@@ -112,7 +112,7 @@ class ParameterTest extends AnyFlatSpec with Matchers {
           }
           """))
 
-      override def inputPath: JsonPath = JsonPath.compile("$.baz")
+      override def inputPath:  Option[JsonPath] = Some(JsonPath.compile("$.baz"))
     }
 
     val result = Fake.getInput(data)

@@ -2,7 +2,7 @@ package com.akkastrator.state
 
 import com.akkastrator.state.ChoiceState.TopLevelChoice
 import com.akkastrator.state.common.States
-import com.akkastrator.state.common.States.{Action, Decision, InputOutput, State, TransactionContext}
+import com.akkastrator.state.common.States.{Action, Decision, InputOutput, State, TransactionContext, jsonPathRead}
 import com.akkastrator.state.conditions.BooleanConditions.booleanEqualsReads
 import com.akkastrator.state.conditions.LogicalConditions.{andRead, notRead, orRead}
 import com.akkastrator.state.conditions.NumericConditions.{numericEqualsReads, numericGreaterThanEqualsReads, numericGreaterThanReads, numericLessThanEqualsReads, numericLessThanReads}
@@ -59,8 +59,8 @@ object ChoiceState {
   implicit val topLevelChoiceListRead: Reads[List[TopLevelChoice]] = Reads.list[TopLevelChoice]
 
   implicit val choiceStateRead: Reads[ChoiceState] = (
-    (JsPath \ "InputPath").read[String].map(s => JsonPath.compile(s)) and
-      (JsPath \ "OutputPath").read[String].map(s => JsonPath.compile(s)) and
+    (JsPath \ "InputPath").readNullable[JsonPath] and
+      (JsPath \ "OutputPath").readNullable[JsonPath] and
       (JsPath \ "Comment").readNullable[String] and
       (JsPath \ "Choices").read[List[TopLevelChoice]] and
       (JsPath \ "Default").readNullable[String]
@@ -86,8 +86,8 @@ object ChoiceState {
 }
 
 
-case class ChoiceState(inputPath: JsonPath = States.CONTEXT_ROOT,
-                       outputPath: JsonPath = States.CONTEXT_ROOT,
+case class ChoiceState(inputPath: Option[JsonPath] = None,
+                       outputPath: Option[JsonPath] = None,
                        comment: Option[String] = None,
                        choices: List[TopLevelChoice],
                        default: Option[String])

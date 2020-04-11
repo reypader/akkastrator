@@ -34,7 +34,7 @@ trait CatchError {
 
   def doHandle(context: TransactionContext, error: ErrorDetails, catcher: Catcher): Decision = {
     val errorOut = CatchError.makeNode(error.error, error.cause)
-    val out = if (catcher.resultPath == States.CONTEXT_ROOT) {
+    val out = if (catcher.resultPath.get.getPath == States.CONTEXT_ROOT) {
       context.copy(data = States.PARSER.parse(errorOut), currentState = catcher.next)
     } else {
       catcher.writeResult(context, errorOut) copy (currentState = catcher.next)
@@ -43,6 +43,6 @@ trait CatchError {
     Decision(out)
   }
 
-  case class Catcher(errorEquals: List[String], next: String, resultPath: JsonPath = States.CONTEXT_ROOT) extends Result
+  case class Catcher(errorEquals: List[String], next: String, resultPath: Option[JsonPath] = None) extends Result
 
 }

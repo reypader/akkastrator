@@ -6,6 +6,7 @@ import com.jayway.jsonpath.JsonPath
 import play.api.libs.functional.syntax._
 import play.api.libs.json.Reads._
 import play.api.libs.json.{Reads, _}
+import com.akkastrator.state.common.States.jsonPathRead
 
 object ErrorRetry {
   implicit val errorRetryRead: Reads[ErrorRetry] = (
@@ -13,7 +14,7 @@ object ErrorRetry {
       (JsPath \ "IntervalSeconds").read[Int] and
       (JsPath \ "MaxAttempts").read[Int] and
       (JsPath \ "BackOffRate").read[BigDecimal] and
-      (JsPath \ "ResultPath").read[String].map(s => JsonPath.compile(s))
+      (JsPath \ "ResultPath").readNullable[JsonPath]
     ) (ErrorRetry.apply _)
 }
 
@@ -22,7 +23,7 @@ case class ErrorRetry(errorEquals: List[String],
                       intervalSeconds: Int = 1,
                       maxAttempts: Int = 3,
                       backOffRate: BigDecimal = 2,
-                      resultPath: JsonPath = States.CONTEXT_ROOT) {
+                      resultPath: Option[JsonPath] = None) {
   if (errorEquals == null || errorEquals.isEmpty) {
     throw new IllegalArgumentException("errorEquals must be specified")
   }

@@ -8,6 +8,7 @@ import com.jayway.jsonpath.JsonPath
 import play.api.libs.functional.syntax._
 import play.api.libs.json.Reads._
 import play.api.libs.json.{JsPath, Reads}
+import com.akkastrator.state.common.States.jsonPathRead
 
 object StringConditions {
 
@@ -48,27 +49,27 @@ object StringConditions {
   case class StringGreaterThanEquals(variable: JsonPath, stringGreaterThanEquals: String) extends AbstractStringGreaterThanEquals(variable, stringGreaterThanEquals)
 
   implicit val stringEqualsReads: Reads[StringEquals] = (
-    (JsPath \ "Variable").read[String].map(s => JsonPath.compile(s)) and
+    (JsPath \ "Variable").read[JsonPath] and
       (JsPath \ "StringEquals").read[String]
     ) (StringEquals.apply _)
 
   implicit val stringLessThanReads: Reads[StringLessThan] = (
-    (JsPath \ "Variable").read[String].map(s => JsonPath.compile(s)) and
+    (JsPath \ "Variable").read[JsonPath] and
       (JsPath \ "StringLessThan").read[String]
     ) (StringLessThan.apply _)
 
   implicit val stringLessThanEqualsReads: Reads[StringLessThanEquals] = (
-    (JsPath \ "Variable").read[String].map(s => JsonPath.compile(s)) and
+    (JsPath \ "Variable").read[JsonPath] and
       (JsPath \ "StringLessThanEquals").read[String]
     ) (StringLessThanEquals.apply _)
 
   implicit val stringGreaterThanReads: Reads[StringGreaterThan] = (
-    (JsPath \ "Variable").read[String].map(s => JsonPath.compile(s)) and
+    (JsPath \ "Variable").read[JsonPath] and
       (JsPath \ "StringGreaterThan").read[String]
     ) (StringGreaterThan.apply _)
 
   implicit val stringGreaterThanEqualsReads: Reads[StringGreaterThanEquals] = (
-    (JsPath \ "Variable").read[String].map(s => JsonPath.compile(s)) and
+    (JsPath \ "Variable").read[JsonPath] and
       (JsPath \ "StringGreaterThanEquals").read[String]
     ) (StringGreaterThanEquals.apply _)
 

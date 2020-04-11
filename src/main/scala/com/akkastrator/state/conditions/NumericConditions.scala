@@ -8,6 +8,7 @@ import com.jayway.jsonpath.JsonPath
 import play.api.libs.functional.syntax._
 import play.api.libs.json.Reads._
 import play.api.libs.json.{Reads, _}
+import com.akkastrator.state.common.States.jsonPathRead
 
 object NumericConditions {
 
@@ -48,27 +49,27 @@ object NumericConditions {
   case class NumericGreaterThanEquals(variable: JsonPath, numericGreaterThanEquals: BigDecimal) extends AbstractNumericGreaterThanEquals(variable, numericGreaterThanEquals)
 
   implicit val numericEqualsReads: Reads[NumericEquals] = (
-    (JsPath \ "Variable").read[String].map(s => JsonPath.compile(s)) and
+    (JsPath \ "Variable").read[JsonPath] and
       (JsPath \ "NumericEquals").read[BigDecimal]
     ) (NumericEquals.apply _)
 
   implicit val numericLessThanReads: Reads[NumericLessThan] = (
-    (JsPath \ "Variable").read[String].map(s => JsonPath.compile(s)) and
+    (JsPath \ "Variable").read[JsonPath] and
       (JsPath \ "NumericLessThan").read[BigDecimal]
     ) (NumericLessThan.apply _)
 
   implicit val numericLessThanEqualsReads: Reads[NumericLessThanEquals] = (
-    (JsPath \ "Variable").read[String].map(s => JsonPath.compile(s)) and
+    (JsPath \ "Variable").read[JsonPath] and
       (JsPath \ "NumericLessThanEquals").read[BigDecimal]
     ) (NumericLessThanEquals.apply _)
 
   implicit val numericGreaterThanReads: Reads[NumericGreaterThan] = (
-    (JsPath \ "Variable").read[String].map(s => JsonPath.compile(s)) and
+    (JsPath \ "Variable").read[JsonPath] and
       (JsPath \ "NumericGreaterThan").read[BigDecimal]
     ) (NumericGreaterThan.apply _)
 
   implicit val numericGreaterThanEqualsReads: Reads[NumericGreaterThanEquals] = (
-    (JsPath \ "Variable").read[String].map(s => JsonPath.compile(s)) and
+    (JsPath \ "Variable").read[JsonPath] and
       (JsPath \ "NumericGreaterThanEquals").read[BigDecimal]
     ) (NumericGreaterThanEquals.apply _)
 }

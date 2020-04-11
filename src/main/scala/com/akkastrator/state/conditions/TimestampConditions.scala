@@ -10,6 +10,7 @@ import com.jayway.jsonpath.JsonPath
 import play.api.libs.functional.syntax._
 import play.api.libs.json.Reads._
 import play.api.libs.json.{Reads, _}
+import com.akkastrator.state.common.States.jsonPathRead
 
 object TimestampConditions {
 
@@ -75,27 +76,27 @@ object TimestampConditions {
   case class TimestampGreaterThanEquals(variable: JsonPath, timestampGreaterThanEquals: String) extends AbstractTimestampGreaterThanEquals(variable, timestampGreaterThanEquals)
 
   implicit val timestampEqualsReads: Reads[TimestampEquals] = (
-    (JsPath \ "Variable").read[String].map(s => JsonPath.compile(s)) and
+    (JsPath \ "Variable").read[JsonPath] and
       (JsPath \ "TimestampEquals").read[String]
     ) (TimestampEquals.apply _)
 
   implicit val timestampLessThanReads: Reads[TimestampLessThan] = (
-    (JsPath \ "Variable").read[String].map(s => JsonPath.compile(s)) and
+    (JsPath \ "Variable").read[JsonPath] and
       (JsPath \ "TimestampLessThan").read[String]
     ) (TimestampLessThan.apply _)
 
   implicit val timestampLessThanEqualsReads: Reads[TimestampLessThanEquals] = (
-    (JsPath \ "Variable").read[String].map(s => JsonPath.compile(s)) and
+    (JsPath \ "Variable").read[JsonPath] and
       (JsPath \ "TimestampLessThanEquals").read[String]
     ) (TimestampLessThanEquals.apply _)
 
   implicit val timestampGreaterThanReads: Reads[TimestampGreaterThan] = (
-    (JsPath \ "Variable").read[String].map(s => JsonPath.compile(s)) and
+    (JsPath \ "Variable").read[JsonPath] and
       (JsPath \ "TimestampGreaterThan").read[String]
     ) (TimestampGreaterThan.apply _)
 
   implicit val timestampGreaterThanEqualsReads: Reads[TimestampGreaterThanEquals] = (
-    (JsPath \ "Variable").read[String].map(s => JsonPath.compile(s)) and
+    (JsPath \ "Variable").read[JsonPath] and
       (JsPath \ "TimestampGreaterThanEquals").read[String]
     ) (TimestampGreaterThanEquals.apply _)
 }

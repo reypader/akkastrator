@@ -30,12 +30,12 @@ class OutputTest extends AnyFlatSpec with Matchers {
 
   "Output=$" should "return the entire context" in {
     object Fake extends Output {
-      override def outputPath: JsonPath = JsonPath.compile("$")
+      override def outputPath: Option[JsonPath] = Some(JsonPath.compile("$"))
     }
 
     val result = Fake.getOutput(data)
 
-    result.data.read[JsonNode](States.CONTEXT_ROOT) shouldEqual om.readTree(
+    result.data.read[JsonNode](States.CONTEXT_ROOT_PATH) shouldEqual om.readTree(
       """
       {
         "foo": "bar",
@@ -54,12 +54,12 @@ class OutputTest extends AnyFlatSpec with Matchers {
 
   "Output=$._" should "return a Context of a field from the context" in {
     object Fake extends Output {
-      override def outputPath: JsonPath = JsonPath.compile("$.baz")
+      override def outputPath: Option[JsonPath] = Some(JsonPath.compile("$.baz"))
     }
 
     val result = Fake.getOutput(data)
 
-    result.data.read[JsonNode](States.CONTEXT_ROOT) shouldEqual om.readTree(
+    result.data.read[JsonNode](States.CONTEXT_ROOT_PATH) shouldEqual om.readTree(
       """
         {
           "gen": "bam"
@@ -69,12 +69,12 @@ class OutputTest extends AnyFlatSpec with Matchers {
 
   it should "return a Context of a field from the context no matter how deeply nested" in {
     object Fake extends Output {
-      override def outputPath: JsonPath = JsonPath.compile("$.pow[1].tin")
+      override def outputPath: Option[JsonPath] = Some(JsonPath.compile("$.pow[1].tin"))
     }
 
     val result = Fake.getOutput(data)
 
-    result.data.read[JsonNode](States.CONTEXT_ROOT) shouldEqual om.readTree(
+    result.data.read[JsonNode](States.CONTEXT_ROOT_PATH) shouldEqual om.readTree(
       """
         "tam"
       """)

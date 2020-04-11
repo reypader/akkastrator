@@ -9,17 +9,18 @@ import play.api.libs.json.Reads._
 import play.api.libs.json.{Reads, _}
 
 import scala.util.Try
+import com.akkastrator.state.common.States.jsonPathRead
 
 object SucceedState {
   implicit val succeedStateRead: Reads[SucceedState] = (
-    (JsPath \ "InputPath").read[String].map(s => JsonPath.compile(s)) and
-      (JsPath \ "OutputPath").read[String].map(s => JsonPath.compile(s)) and
+    (JsPath \ "InputPath").readNullable[JsonPath] and
+      (JsPath \ "OutputPath").readNullable[JsonPath] and
       (JsPath \ "Comment").readNullable[String]
     ) (SucceedState.apply _)
 }
 
-case class SucceedState(inputPath: JsonPath = States.CONTEXT_ROOT,
-                        outputPath: JsonPath = States.CONTEXT_ROOT,
+case class SucceedState(inputPath: Option[JsonPath] = None,
+                        outputPath: Option[JsonPath] = None,
                         comment: Option[String] = None)
   extends State("Succeed", comment) with InputOutput {
   override def prepare(context: TransactionContext): Try[Action] = Try {

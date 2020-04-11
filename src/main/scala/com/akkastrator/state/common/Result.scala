@@ -8,13 +8,16 @@ import com.jayway.jsonpath.{JsonPath, PathNotFoundException}
 import scala.util.{Success, Try}
 
 trait Result {
-  def resultPath: JsonPath
+  def resultPath: Option[JsonPath]
 
-  def writeResult(context: TransactionContext, value: JsonNode): TransactionContext = if (resultPath.getPath == States.CONTEXT_ROOT.getPath) {
-    context.copy(data = States.PARSER.parse(value))
-  } else {
-    val newContext = States.PARSER.parse(context.data.read[JsonNode](States.CONTEXT_ROOT).deepCopy[JsonNode]())
-    context.copy(data = setValue(newContext, resultPath, value))
+  def writeResult(context: TransactionContext, value: JsonNode): TransactionContext = {
+    val path = resultPath.getOrElse(States.CONTEXT_ROOT_PATH)
+    if (path.getPath == States.CONTEXT_ROOT) {
+      context.copy(data = States.PARSER.parse(value))
+    } else {
+      val newContext = States.PARSER.parse(context.data.read[JsonNode](States.CONTEXT_ROOT_PATH).deepCopy[JsonNode]())
+      context.copy(data = setValue(newContext, path, value))
+    }
   }
 
 

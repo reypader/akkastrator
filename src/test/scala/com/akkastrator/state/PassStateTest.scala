@@ -43,7 +43,7 @@ class PassStateTest extends AnyFlatSpec with Matchers {
   }
 
   "No result and resultPath with inputPath" should "pass the value in inputPath" in {
-    val underTest = PassState(result = None, inputPath = JsonPath.compile("$.baz"), end = true)
+    val underTest = PassState(result = None, inputPath = Some(JsonPath.compile("$.baz")), end = true)
 
     val action = underTest.prepare(data)
     underTest.decide(data, action.get.payload) map {
@@ -55,7 +55,7 @@ class PassStateTest extends AnyFlatSpec with Matchers {
   }
 
   "No result and resultPath with inputPath" should "return the value in outputPath" in {
-    val underTest = PassState(result = None, outputPath = JsonPath.compile("$.baz"), end = true)
+    val underTest = PassState(result = None, outputPath =Some( JsonPath.compile("$.baz")), end = true)
 
     val action = underTest.prepare(data)
     underTest.decide(data, action.get.payload) map {
@@ -127,7 +127,7 @@ class PassStateTest extends AnyFlatSpec with Matchers {
           "foo" : "bar"
         }
         """)
-    val underTest = PassState(result = Some(resultJson), resultPath = JsonPath.compile("$.result.bar"), end = true)
+    val underTest = PassState(result = Some(resultJson), resultPath = Some(JsonPath.compile("$.result.bar")), end = true)
 
     val action = underTest.prepare(data)
     underTest.decide(data, action.get.payload) map {
@@ -158,7 +158,7 @@ class PassStateTest extends AnyFlatSpec with Matchers {
   }
 
   "resultPath without result" should "nest to the context inside itself" in {
-    val underTest = PassState(result = None, resultPath = JsonPath.compile("$.result"), end = true)
+    val underTest = PassState(result = None, resultPath =Some( JsonPath.compile("$.result")), end = true)
 
     val action = underTest.prepare(data)
     underTest.decide(data, action.get.payload) map {

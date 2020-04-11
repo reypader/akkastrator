@@ -2,6 +2,7 @@ package com.akkastrator.state
 
 import com.akkastrator.state.ChoiceState.choiceStateRead
 import com.akkastrator.state.FailState.failStateRead
+import com.akkastrator.state.MapState.mapStateRead
 import com.akkastrator.state.ParallelState.parallelStateRead
 import com.akkastrator.state.PassState.passStateRead
 import com.akkastrator.state.SucceedState.succeedStateRead
@@ -16,6 +17,8 @@ import play.api.libs.json._
 import scala.util.Try
 
 object StateMachine {
+  val DEFAULT_VERSION = "1.0"
+
   private def typeOf(o: scala.collection.Map[String, JsValue], typeString: String): Boolean = {
     o("Type").asInstanceOf[JsString].value == typeString
   }
@@ -29,6 +32,7 @@ object StateMachine {
       case JsObject(o) if typeOf(o, "Succeed") => succeedStateRead
       case JsObject(o) if typeOf(o, "Fail") => failStateRead
       case JsObject(o) if typeOf(o, "Parallel") => parallelStateRead
+      case JsObject(o) if typeOf(o, "Map") => mapStateRead
       case _ => throw new IllegalArgumentException("Unrecognized state type")
     }
   }.map(_.reads(json)).recover(ex => JsError(ex.getMessage)).get
@@ -40,17 +44,16 @@ object StateMachine {
     (JsPath \ "StartAt").read[String] and
       (JsPath \ "States").read[Map[String, State]] and
       (JsPath \ "TimeoutSeconds").readNullable[Int] and
-      (JsPath \ "Version").read[String] and
+      (JsPath \ "Version").readWithDefault(DEFAULT_VERSION) and
       (JsPath \ "Comment").readNullable[String]
     ) (StateMachine.apply _)
-
 
 }
 
 case class StateMachine(startAt: String,
                         states: Map[String, State],
                         timeoutSeconds: Option[Int],
-                        version: String = "1.0",
+                        version: String = StateMachine.DEFAULT_VERSION,
                         comment: Option[String] = None) extends LazyLogging {
   states.foreach({
     case (stateName, state: PassState) =>
