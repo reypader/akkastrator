@@ -19,8 +19,8 @@ object TaskState {
       (JsPath \ "Next").readNullable[String] and
       (JsPath \ "Parameters").readNullable[JsonNode] and
       (JsPath \ "Comment").readNullable[String] and
-      (JsPath \ "Retry").readNullable[ErrorRetry] and
-      (JsPath \ "Catch").readNullable[ErrorCatch] and
+      (JsPath \ "Retry").readNullable[List[ErrorRetry]] and
+      (JsPath \ "Catch").readNullable[List[ErrorCatch]] and
       (JsPath \ "Resource").read[String] and
       (JsPath \ "TimeoutSeconds").readWithDefault(DEFAULT_TIMEOUT_SECONDS) and
       (JsPath \ "HeartBeatSeconds").readNullable[Int]
@@ -34,8 +34,8 @@ case class TaskState(inputPath: Option[JsonPath] = None,
                      next: Option[String] = None,
                      parameters: Option[JsonNode] = None,
                      comment: Option[String] = None,
-                     errorRetry: Option[ErrorRetry] = None,
-                     errorCatch: Option[ErrorCatch] = None,
+                     errorRetry: Option[List[ErrorRetry]] = None,
+                     errorCatch: Option[List[ErrorCatch]] = None,
                      resource: String,
                      timeoutSeconds: Int = TaskState.DEFAULT_TIMEOUT_SECONDS,
                      heartBeatSeconds: Option[Int])

@@ -22,8 +22,8 @@ object ParallelState {
       (JsPath \ "Next").readNullable[String] and
       (JsPath \ "Parameters").readNullable[JsonNode] and
       (JsPath \ "Comment").readNullable[String] and
-      (JsPath \ "Retry").readNullable[ErrorRetry] and
-      (JsPath \ "Catch").readNullable[ErrorCatch] and
+      (JsPath \ "Retry").readNullable[List[ErrorRetry]] and
+      (JsPath \ "Catch").readNullable[List[ErrorCatch]] and
       (JsPath \ "Branches").read[List[StateMachine]]
     ) (ParallelState.apply _)
 }
@@ -35,8 +35,8 @@ case class ParallelState(inputPath: Option[JsonPath] = None,
                          next: Option[String] = None,
                          parameters: Option[JsonNode] = None,
                          comment: Option[String] = None,
-                         errorRetry: Option[ErrorRetry] = None,
-                         errorCatch: Option[ErrorCatch] = None,
+                         errorRetry: Option[List[ErrorRetry]] = None,
+                         errorCatch: Option[List[ErrorCatch]] = None,
                          branches: List[StateMachine])
   extends State("Parallel", comment) with InputOutput with Computation with Transition with ErrorHandling {
   if (branches == null | branches.isEmpty) {

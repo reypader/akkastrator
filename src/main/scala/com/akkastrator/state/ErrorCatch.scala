@@ -1,12 +1,11 @@
 package com.akkastrator.state
 
-import com.akkastrator.state.common.States.stringListRead
-import com.akkastrator.state.common.{CatchError, States}
+import com.akkastrator.state.common.CatchError
+import com.akkastrator.state.common.States.{jsonPathRead, stringListRead}
 import com.jayway.jsonpath.JsonPath
 import play.api.libs.functional.syntax._
 import play.api.libs.json.Reads._
 import play.api.libs.json.{Reads, _}
-import com.akkastrator.state.common.States.jsonPathRead
 
 object ErrorCatch {
   implicit val errorCatchRead: Reads[ErrorCatch] = (
@@ -14,6 +13,8 @@ object ErrorCatch {
       (JsPath \ "Next").read[String] and
       (JsPath \ "ResultPath").readNullable[JsonPath]
     ) (ErrorCatch.apply _)
+
+  implicit val errorCatchListRead: Reads[List[ErrorCatch]] = Reads.list[ErrorCatch]
 }
 
 case class ErrorCatch(errorEquals: List[String],

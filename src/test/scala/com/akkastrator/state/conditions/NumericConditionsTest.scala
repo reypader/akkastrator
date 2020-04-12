@@ -8,7 +8,7 @@ import org.scalatest.matchers.should.Matchers
 
 class NumericConditionsTest extends AnyFlatSpec with Matchers {
   val om: ObjectMapper = new ObjectMapper()
-  var data: DocumentContext = States.PARSER.parse(
+  val data: DocumentContext = States.PARSER.parse(
     """
                 {
                   "foo": 1.23,

@@ -8,7 +8,9 @@
       "Catch": [
         {
           "ErrorEquals": ["CustomError"],
-          "Next": "CustomErrorFallback"
+          "Next": "CustomErrorFallback",
+          "ResultPath" : "$.bar"
+
         },
         {
           "ErrorEquals": ["States.TaskFailed"],

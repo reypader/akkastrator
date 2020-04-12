@@ -51,9 +51,9 @@ object States {
   }
 
   trait ErrorHandling {
-    def errorRetry: Option[ErrorRetry]
+    def errorRetry: Option[List[ErrorRetry]]
 
-    def errorCatch: Option[ErrorCatch]
+    def errorCatch: Option[List[ErrorCatch]]
   }
 
   abstract class State(stateType: String, comment: Option[String]) {

@@ -13,9 +13,12 @@ object ErrorRetry {
     (JsPath \ "ErrorEquals").read[List[String]] and
       (JsPath \ "IntervalSeconds").read[Int] and
       (JsPath \ "MaxAttempts").read[Int] and
-      (JsPath \ "BackOffRate").read[BigDecimal] and
+      (JsPath \ "BackoffRate").read[BigDecimal] and
       (JsPath \ "ResultPath").readNullable[JsonPath]
     ) (ErrorRetry.apply _)
+
+  implicit val errorRetryListRead: Reads[List[ErrorRetry]] = Reads.list[ErrorRetry]
+
 }
 
 

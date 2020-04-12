@@ -8,7 +8,7 @@ import org.scalatest.matchers.should.Matchers
 
 class TimestampConditionsTest extends AnyFlatSpec with Matchers {
   val om: ObjectMapper = new ObjectMapper()
-  var data: DocumentContext = States.PARSER.parse(
+  val data: DocumentContext = States.PARSER.parse(
     """
                 {
                   "foo": "2012-12-31T23:59:59+08:00",

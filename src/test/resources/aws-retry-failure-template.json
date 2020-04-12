@@ -10,7 +10,8 @@
           "ErrorEquals": ["CustomError"],
           "IntervalSeconds": 1,
           "MaxAttempts": 2,
-          "BackoffRate": 2.0
+          "BackoffRate": 2.1,
+          "ResultPath" : "$.bar"
         },
         {
           "ErrorEquals": ["States.TaskFailed"],
