@@ -41,7 +41,7 @@ object WaitState {
       (JsPath \ "Next").readNullable[String] and
       (JsPath \ "Comment").readNullable[String] and
       (JsPath \ "Seconds").readNullable[Int] and
-      (JsPath \ "Timestamp").readNullable[String] and
+      (JsPath \ "Timestamp").readNullable[String].map(s=> s.map(OffsetDateTime.parse(_))) and
       (JsPath \ "SecondsPath").readNullable[String].map(s => s.map(JsonPath.compile(_))) and
       (JsPath \ "TimestampPath").readNullable[String].map(s => s.map(JsonPath.compile(_)))
     ) (WaitState.apply _)
@@ -55,7 +55,7 @@ case class WaitState(inputPath: Option[JsonPath] = None,
                      next: Option[String] = None,
                      comment: Option[String] = None,
                      seconds: Option[Int],
-                     timestamp: Option[String],
+                     timestamp: Option[OffsetDateTime],
                      secondsPath: Option[JsonPath],
                      timestampPath: Option[JsonPath])
   extends State("Wait", comment) with InputOutput with Transition {
@@ -73,8 +73,7 @@ case class WaitState(inputPath: Option[JsonPath] = None,
     val deadline = (seconds, timestamp, secondsPath, timestampPath) match {
       case (Some(duration), None, None, None) =>
         OffsetDateTime.now().plusSeconds(duration)
-      case (None, Some(deadline), None, None) =>
-        OffsetDateTime.parse(deadline)
+      case (None, Some(deadline), None, None) => deadline
       case (None, None, Some(durationPath), None) =>
         val effectiveInput = States.PARSER.parse(getInput(context))
         val duration = effectiveInput.read[IntNode](durationPath)

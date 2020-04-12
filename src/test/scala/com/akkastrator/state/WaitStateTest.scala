@@ -25,6 +25,29 @@ class WaitStateTest extends AsyncFlatSpec with Matchers {
       """
   ), "test")
 
+  "end/pass" should "throw IllegalArgumentException if both absent" in {
+    assertThrows[IllegalArgumentException] {
+      WaitState(end = false, next = None, seconds = Some(1), secondsPath = None, timestamp = None, timestampPath = None)
+    }
+  }
+  it should "throw IllegalArgumentException if both present" in {
+    assertThrows[IllegalArgumentException] {
+      WaitState(end = true, next = Some(""), seconds = Some(1), secondsPath = None, timestamp = None, timestampPath = None)
+    }
+  }
+
+  "constructor" should "throw IllegalArgumentException if no deadline is provided" in {
+    assertThrows[IllegalArgumentException]{
+      WaitState(end = true, next = None, seconds = None, secondsPath = None, timestamp = None, timestampPath = None)
+    }
+  }
+
+  it should "throw IllegalArgumentException if more than 1 deadline is provided" in {
+    assertThrows[IllegalArgumentException]{
+      WaitState(end = true, next = None, seconds =  Some(1), secondsPath =None, timestamp = Some(OffsetDateTime.now()), timestampPath = None)
+    }
+  }
+
 
   "WaitState.seconds" should "attempt to wait the provided seconds" in {
     val underTest = WaitState(seconds = Some(3), secondsPath = None, timestamp = None, timestampPath = None, end = true)
@@ -43,7 +66,7 @@ class WaitStateTest extends AsyncFlatSpec with Matchers {
 
   it should "attempt to wait until the provided deadline" in {
     val deadline = OffsetDateTime.now().plusSeconds(5)
-    val underTest = WaitState(seconds = None, secondsPath = None, timestamp = Some(deadline.toString), timestampPath = None, next = Some("DERP"))
+    val underTest = WaitState(seconds = None, secondsPath = None, timestamp = Some(deadline), timestampPath = None, next = Some("DERP"))
 
 
     val Action(targetResource, payload) = underTest.prepare(data).get

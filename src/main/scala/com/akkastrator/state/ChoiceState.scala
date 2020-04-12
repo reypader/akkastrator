@@ -109,7 +109,7 @@ case class ChoiceState(inputPath: Option[JsonPath] = None,
   override def decide(context: TransactionContext, data: JsonNode): Try[Decision] = Try {
     val result = choices.find(rule => rule.evaluate(States.PARSER.parse(data))).map(rule => rule.next)
     if (result.isEmpty && default.isEmpty) {
-      throw StateException.UnresolvableChoiceException(this, context)
+      throw StateException.StateFailure("States.NoChoiceMatched", context.currentState)
     } else {
       Decision(getOutput(context) copy (currentState = result.getOrElse(default.get)))
     }

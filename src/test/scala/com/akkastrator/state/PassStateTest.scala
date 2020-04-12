@@ -29,6 +29,16 @@ class PassStateTest extends AnyFlatSpec with Matchers {
       """
   ), "test")
 
+  "end/pass" should "throw IllegalArgumentException if both absent" in {
+    assertThrows[IllegalArgumentException]{
+      PassState(end=false, next = None)
+    }
+  }
+  it should "throw IllegalArgumentException if both present" in {
+    assertThrows[IllegalArgumentException]{
+      PassState(end=true, next = Some(""))
+    }
+  }
 
   "No result and resultPath" should "pass the context as-is" in {
     val underTest = PassState(result = None, end = true)

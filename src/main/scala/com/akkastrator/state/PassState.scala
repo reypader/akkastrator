@@ -30,7 +30,7 @@ case class PassState(inputPath: Option[JsonPath] = None,
                      next: Option[String] = None,
                      parameters: Option[JsonNode] = None,
                      comment: Option[String] = None,
-                     result: Option[JsonNode])
+                     result: Option[JsonNode] = None)
   extends State("Pass", comment) with InputOutput with Computation with Transition {
   if (end && next.isDefined) {
     throw new IllegalArgumentException("`next` step must not be defined if `end` is true")

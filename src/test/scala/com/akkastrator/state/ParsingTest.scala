@@ -1,5 +1,7 @@
 package com.akkastrator.state
 
+import java.time.OffsetDateTime
+
 import com.akkastrator.state.common.States
 import com.akkastrator.state.conditions.BooleanConditions.BooleanEquals
 import com.akkastrator.state.conditions.LogicalConditions.{And, Not, Or}
@@ -298,7 +300,7 @@ class ParsingTest extends AnyFlatSpec with Matchers with Inside {
               end shouldBe false
               next shouldBe Some("wait_using_timestamp_path")
               seconds shouldBe None
-              timestamp shouldBe Some("2015-09-04T01:59:00Z")
+              timestamp shouldBe Some(OffsetDateTime.parse("2015-09-04T01:59:00Z"))
               secondsPath shouldBe None
               timestampPath shouldBe None
           }
